@@ -1,0 +1,19 @@
+{
+  "name": "natours-api",
+  "version": "1.0.0",
+  "description": "Project from Node.js, Express & MongoDB BootCamp | Udemy by Jonas Schmedtmann",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/themarcosf/natours-api.git"
+  },
+  "author": "Marcos Florencio",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/themarcosf/natours-api/issues"
+  },
+  "homepage": "https://github.com/themarcosf/natours-api#readme"
+}
