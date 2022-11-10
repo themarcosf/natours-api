@@ -2,7 +2,7 @@ const fs = require("fs");
 
 // data load
 const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, {
+  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, {
     encoding: "utf-8",
   })
 );
@@ -15,6 +15,7 @@ exports.getAllTours = function (req, res) {
     .json({
       status: "success",
       results: tours.length,
+      time: req.requestTime,
       data: { tours },
     })
     .end();
@@ -23,22 +24,21 @@ exports.getAllTours = function (req, res) {
 exports.getTour = function (req, res) {
   const _id = req.params.id;
 
-  _id > tours.at(-1).id &&
-    res
-      .status(404)
-      .json({
-        status: "fail",
-        message: "Invalid ID",
-      })
-      .end();
-
-  res
-    .status(200)
-    .json({
-      status: "success",
-      data: { tour: tours.find((el) => String(el.id) === _id) },
-    })
-    .end();
+  _id > tours.at(-1).id
+    ? res
+        .status(404)
+        .json({
+          status: "fail",
+          message: "Invalid ID",
+        })
+        .end()
+    : res
+        .status(200)
+        .json({
+          status: "success",
+          data: { tour: tours.find((el) => String(el.id) === _id) },
+        })
+        .end();
 };
 
 exports.createNewTour = function (req, res) {
