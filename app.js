@@ -1,50 +1,23 @@
-// core modules
 const express = require("express");
-const fs = require("fs");
-////////////////////////////////////////////////////////////////////////
-
-// data load
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`, {
-    encoding: "utf-8",
-  })
-);
+const Routes = require("./routes");
 ////////////////////////////////////////////////////////////////////////
 
 // SERVER
 const app = express();
+const localhost = "127.0.0.1";
+const port = 8000;
 
 // middlewares
 app.use(express.json()); //adds body to request
 
-// routing [JSEND standard]
-app.get("/api/v1/tours", (req, res) =>
-  res
-    .status(200)
-    .json({
-      status: "success",
-      results: tours.length,
-      data: { tours },
-    })
-    .end()
+// routes
+app.route("/api/v1/tours").get(Routes.getAllTours).post(Routes.createNewTour);
+app
+  .route("/api/v1/tours/:id")
+  .get(Routes.getTour)
+  .patch(Routes.updateTour)
+  .delete(Routes.deleteTour);
+
+app.listen(port, localhost, () =>
+  console.log(`Server running on port ${port}`)
 );
-
-app.post("/api/v1/tours", (req, res) => {
-  const _id = tours.at(-1).id + 1;
-  const _tour = Object.assign({ id: _id }, req.body);
-  tours.push(_tour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) =>
-      res
-        .status(201)
-        .json({
-          status: "Success",
-          data: { tour: _tour },
-        })
-        .end()
-  );
-});
-
-app.listen(8000, "127.0.0.1", () => console.log("Server running on port 8000"));
