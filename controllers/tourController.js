@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-// data load
+// DATA LOAD
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, {
     encoding: "utf-8",
@@ -8,7 +8,7 @@ const tours = JSON.parse(
 );
 ////////////////////////////////////////////////////////////////////////
 
-// ROUTE HANDLERS
+// VALIDATION HANDLERS
 exports.checkId = function (req, res, next, val) {
   if (val > tours.at(-1).id) {
     return res
@@ -22,6 +22,23 @@ exports.checkId = function (req, res, next, val) {
   next();
 };
 
+exports.validateNewTour = function (req, res, next) {
+  if (!req.body.name || !req.body.price) {
+    return res
+      .status(400)
+      .json({
+        status: "Fail",
+        data: {
+          message: "Missing name or price",
+        },
+      })
+      .end();
+  }
+  next();
+};
+////////////////////////////////////////////////////////////////////////
+
+// ROUTE HANDLERS
 exports.getAllTours = function (req, res) {
   res
     .status(200)
