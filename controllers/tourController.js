@@ -9,6 +9,19 @@ const tours = JSON.parse(
 ////////////////////////////////////////////////////////////////////////
 
 // ROUTE HANDLERS
+exports.checkId = function (req, res, next, val) {
+  if (val > tours.at(-1).id) {
+    return res
+      .status(404)
+      .json({
+        status: "fail",
+        message: "Invalid ID",
+      })
+      .end();
+  }
+  next();
+};
+
 exports.getAllTours = function (req, res) {
   res
     .status(200)
@@ -22,29 +35,19 @@ exports.getAllTours = function (req, res) {
 };
 
 exports.getTour = function (req, res) {
-  const _id = req.params.id;
-
-  _id > tours.at(-1).id
-    ? res
-        .status(404)
-        .json({
-          status: "fail",
-          message: "Invalid ID",
-        })
-        .end()
-    : res
-        .status(200)
-        .json({
-          status: "success",
-          data: { tour: tours.find((el) => String(el.id) === _id) },
-        })
-        .end();
+  res
+    .status(200)
+    .json({
+      status: "success",
+      data: { tour: tours.find((el) => String(el.id) === req.params.id) },
+    })
+    .end();
 };
 
 exports.createNewTour = function (req, res) {
   const _tour = Object.assign({ id: tours.at(-1).id + 1 }, req.body);
   tours.push(_tour);
-  writeFile(
+  fs.writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) =>
@@ -59,42 +62,21 @@ exports.createNewTour = function (req, res) {
 };
 
 exports.updateTour = function (req, res) {
-  console.log(req.params);
-  console.log(req.body);
-
-  req.params.id > tours.at(-1).id
-    ? res
-        .status(404)
-        .json({
-          status: "fail",
-          message: "Invalid ID",
-        })
-        .end()
-    : res
-        .status(200)
-        .json({
-          status: "Success",
-          data: "<updated tour>",
-        })
-        .end();
+  res
+    .status(200)
+    .json({
+      status: "Success",
+      data: "<updated tour>",
+    })
+    .end();
 };
 
 exports.deleteTour = function (req, res) {
-  console.log(req.params);
-
-  req.params.id > tours.at(-1).id
-    ? res
-        .status(404)
-        .json({
-          status: "fail",
-          message: "Invalid ID",
-        })
-        .end()
-    : res
-        .status(204)
-        .json({
-          status: "Success",
-          data: null,
-        })
-        .end();
+  res
+    .status(204)
+    .json({
+      status: "Success",
+      data: null,
+    })
+    .end();
 };
