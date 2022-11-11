@@ -44,7 +44,7 @@ exports.getTour = function (req, res) {
 exports.createNewTour = function (req, res) {
   const _tour = Object.assign({ id: tours.at(-1).id + 1 }, req.body);
   tours.push(_tour);
-  fs.writeFile(
+  writeFile(
     `${__dirname}/dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) =>

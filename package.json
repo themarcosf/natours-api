@@ -2,9 +2,9 @@
   "name": "natours-api",
   "version": "1.0.0",
   "description": "Project from Node.js, Express & MongoDB BootCamp | Udemy by Jonas Schmedtmann",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
