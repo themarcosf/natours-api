@@ -1,5 +1,6 @@
 // environment variables
 require("dotenv").config({ path: "./config.env" });
+//////////////////////////////////////////////////////////////////
 
 // database
 const mongoose = require("mongoose");
@@ -19,9 +20,30 @@ mongoose
 //   useFindAndModify: false,
 // }
 
+const tourSchema = new mongoose.Schema({
+  name: {
+    type: Number,
+    required: [true, "Tour name is required."],
+    unique: true,
+  },
+  price: {
+    type: Number,
+    required: [true, "Tour price is required."],
+  },
+  rating: {
+    type: Number,
+    default: 4.5,
+    required: [true, "Tour rating is required."],
+  },
+});
+
+const Tour = new mongoose.model("Tour", tourSchema, "tours");
+//////////////////////////////////////////////////////////////////
+
 // server
 const app = require("./app");
 
 app.listen(process.env.PORT || 8000, process.env.HOST || "127.0.0.1", () =>
   console.log(`Server running on port ${process.env.PORT}`)
 );
+//////////////////////////////////////////////////////////////////
