@@ -1,41 +1,4 @@
-const fs = require("fs");
-
-// DATA LOAD
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`, {
-    encoding: "utf-8",
-  })
-);
-////////////////////////////////////////////////////////////////////////
-
-// VALIDATION HANDLERS
-exports.checkId = function (req, res, next, val) {
-  if (val > tours.at(-1).id) {
-    return res
-      .status(404)
-      .json({
-        status: "fail",
-        message: "Invalid ID",
-      })
-      .end();
-  }
-  next();
-};
-
-exports.validateNewTour = function (req, res, next) {
-  if (!req.body.name || !req.body.price) {
-    return res
-      .status(400)
-      .json({
-        status: "Fail",
-        data: {
-          message: "Missing name or price",
-        },
-      })
-      .end();
-  }
-  next();
-};
+const Tour = require("./../models/tourModel");
 ////////////////////////////////////////////////////////////////////////
 
 // ROUTE HANDLERS
@@ -44,9 +7,9 @@ exports.getAllTours = function (req, res) {
     .status(200)
     .json({
       status: "success",
-      results: tours.length,
+      results: "<results>",
       time: req.requestTime,
-      data: { tours },
+      data: {},
     })
     .end();
 };
@@ -56,26 +19,32 @@ exports.getTour = function (req, res) {
     .status(200)
     .json({
       status: "success",
-      data: { tour: tours.find((el) => String(el.id) === req.params.id) },
+      data: { tour: "<tour>" },
     })
     .end();
 };
 
 exports.createNewTour = function (req, res) {
-  const _tour = Object.assign({ id: tours.at(-1).id + 1 }, req.body);
-  tours.push(_tour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) =>
+  new Tour(req.body)
+    .save()
+    .then((doc) => {
       res
         .status(201)
         .json({
           status: "Success",
-          data: { tour: _tour },
+          data: { tour: doc },
         })
-        .end()
-  );
+        .end();
+    })
+    .catch((err) => {
+      res
+        .status(400)
+        .json({
+          status: "Failed",
+          data: { error: err },
+        })
+        .end();
+    });
 };
 
 exports.updateTour = function (req, res) {

@@ -14,40 +14,14 @@ mongoose
   .connect(DB)
   .then((con) => console.log(`DB connected to: ${con.connections[0].name}`));
 
-// {
-//   useNewUrlParser: true,
-//   useCreateIndex: true,
-//   useFindAndModify: false,
-// }
-
-const tourSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Tour name is required."],
-    unique: true,
-  },
-  price: {
-    type: Number,
-    required: [true, "Tour price is required."],
-  },
-  rating: {
-    type: Number,
-    default: 4.5,
-    required: [true, "Tour rating is required."],
-  },
-});
-
-const Tour = new mongoose.model("Tour", tourSchema);
-
-const testTour = new Tour({
-  name: "The Park Camper",
-  price: 997,
-});
-
-testTour
-  .save()
-  .then((doc) => console.log(doc))
-  .catch((err) => console.log(err));
+/*
+REMINDER: deprecation warnings
+{
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+}
+*/
 //////////////////////////////////////////////////////////////////
 
 // server
