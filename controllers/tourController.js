@@ -24,27 +24,25 @@ exports.getTour = function (req, res) {
     .end();
 };
 
-exports.createNewTour = function (req, res) {
-  new Tour(req.body)
-    .save()
-    .then((doc) => {
-      res
-        .status(201)
-        .json({
-          status: "Success",
-          data: { tour: doc },
-        })
-        .end();
-    })
-    .catch((err) => {
-      res
-        .status(400)
-        .json({
-          status: "Failed",
-          data: { error: err },
-        })
-        .end();
-    });
+exports.createNewTour = async function (req, res) {
+  try {
+    const _tour = await Tour.create(req.body);
+    res
+      .status(201)
+      .json({
+        status: "Success",
+        data: { tour: _tour },
+      })
+      .end();
+  } catch (err) {
+    res
+      .status(400)
+      .json({
+        status: "Fail",
+        message: err,
+      })
+      .end();
+  }
 };
 
 exports.updateTour = function (req, res) {

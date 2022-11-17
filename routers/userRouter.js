@@ -3,6 +3,11 @@ const userController = require("../controllers/userController");
 
 const router = express.Router();
 
+/*
+EXAMPLE: param middleware
+router.param("name", [callback function (req, res, next, val)] );
+*/
+
 router
   .route("/")
   .get(userController.getAllUsers)
