@@ -66,22 +66,48 @@ exports.createNewTour = async function (req, res) {
   }
 };
 
-exports.updateTour = function (req, res) {
-  res
-    .status(200)
-    .json({
-      status: "Success",
-      data: "<updated tour>",
-    })
-    .end();
+exports.updateTour = async function (req, res) {
+  try {
+    const _tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res
+      .status(200)
+      .json({
+        status: "sucess",
+        data: { _tour },
+      })
+      .end();
+  } catch (err) {
+    res
+      .status(400)
+      .json({
+        status: "fail",
+        message: err,
+      })
+      .end();
+  }
 };
 
-exports.deleteTour = function (req, res) {
-  res
-    .status(204)
-    .json({
-      status: "Success",
-      data: null,
-    })
-    .end();
+exports.deleteTour = async function (req, res) {
+  try {
+    await Tour.findByIdAndDelete(req.params.id);
+    res
+      .status(200)
+      .json({
+        status: "sucess",
+        data: null,
+      })
+      .end();
+  } catch (err) {
+    res
+      .status(400)
+      .json({
+        status: "fail",
+        message: err,
+      })
+      .end();
+  }
 };
