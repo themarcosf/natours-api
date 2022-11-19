@@ -1,10 +1,35 @@
+/*
+EXPLANATION: queries in mongoose
+
+1. methods of the Model object (like Model.find()) return instances of the Query object
+2. instances of the Query object (Query.prototype.*) use chainable methods
+3. async/await executes the query immediately and return the documents that match the query
+
+      = SOLUTION
+      . first store the query in a temporary variable (const _query)
+      . chain all necessary methods in a final variable (const query)
+      . await the final query only after chaining 
+*/
+
 const Tour = require("./../models/tourModel");
 ////////////////////////////////////////////////////////////////////////
+
+// TODO: explain
+const _utils = ["page", "sort", "limit", "fields"];
 
 // ROUTE HANDLERS
 exports.getAllTours = async function (req, res) {
   try {
-    const _tours = await Tour.find();
+    const _query = JSON.parse(
+      JSON.stringify({ ...req.query }).replace(
+        /\b(gt|gte|lt|lte)\b/g,
+        (match) => `$${match}`
+      )
+    );
+    _utils.forEach((el) => delete _query[el]);
+    const query = Tour.find(_query);
+
+    const _tours = await query;
     res
       .status(200)
       .json({

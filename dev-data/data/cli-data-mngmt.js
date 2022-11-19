@@ -3,12 +3,14 @@ command line script for importing and deleting collections of data
 */
 
 // required modules
-const dotenv = require("dotenv").config({
-  path: `${__dirname}/../../config.env`,
-});
+const dotenv = require("dotenv");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const Tour = require("./../../models/tourModel");
+
+dotenv.config({
+  path: `${__dirname}/../../config.env`,
+});
 ////////////////////////////////////////////////////////////////////////////////
 
 // database
