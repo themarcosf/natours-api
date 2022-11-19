@@ -54,7 +54,7 @@ const tourSchema = new mongoose.Schema({
     type: [Date],
     required: [true, "startDates is required"],
   },
-  createdAd: {
+  createdAt: {
     type: Date,
     default: Date.now(),
   },
