@@ -13,7 +13,7 @@ app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
 });
-if (process.env.NODE_ENV == "development") app.use(morgan("dev")); // http requests logger
+if (process.env.NODE_ENV === "development") app.use(morgan("dev")); // http requests logger
 
 // routers
 app.use("/api/v1/tours", tourRouter);
