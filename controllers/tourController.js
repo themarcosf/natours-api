@@ -16,6 +16,13 @@ const Tour = require("./../models/tourModel");
 
 const _queryParams = ["sort", "fields", "page", "limit"];
 
+// ALIAS MIDDLEWARE
+exports.aliasTop5 = function (req, res, next) {
+  req.query.sort = "-ratingsAverage,price,-maxGroupSize";
+  req.query.limit = 5;
+  next();
+};
+
 // ROUTE HANDLERS
 exports.getAllTours = async function (req, res) {
   let query;
