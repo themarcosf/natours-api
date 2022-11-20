@@ -12,7 +12,7 @@ const DB = process.env.DATABASE.replace(
 
 mongoose
   .connect(DB)
-  .then((con) => console.log(`DB connected to: ${con.connections[0].name}`));
+  .then((conn) => console.log(`DB connected to: ${conn.connections[0].name}`));
 
 /*
 REMINDER: deprecation warnings

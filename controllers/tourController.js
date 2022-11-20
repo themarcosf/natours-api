@@ -14,7 +14,7 @@ EXPLANATION: queries in mongoose
 
 const Tour = require("./../models/tourModel");
 
-const _queryParams = ["sort", "fields", "limit", "page"];
+const _queryParams = ["sort", "fields", "page", "limit"];
 
 // ROUTE HANDLERS
 exports.getAllTours = async function (req, res) {
@@ -47,6 +47,22 @@ exports.getAllTours = async function (req, res) {
       query = query.select(fields);
     } else {
       query = query.select("-__v");
+    }
+
+    // pagination: allow page selection in data intensive APIs
+    //       page=number : page to be sent in the response
+    //       limit=number : limit of data in the response
+    //       skip(number) : amount of results to be skipped before querying data
+    //       limit(number) : maximum amount of results in the query response
+    //       eg limit=10, page=1 1-10, page=2 11-20, page=3 21-30, ...
+    const _page = Number(req.query.page) || 1;
+    const _limit = Number(req.query.limit) || 10;
+    const _skip = _limit * (_page - 1);
+    query = query.skip(_skip).limit(_limit);
+
+    if (req.query.page) {
+      const _count = await Tour.countDocuments();
+      if (_skip >= _count) throw new Error("This page does not exist");
     }
 
     // execute query
