@@ -14,7 +14,7 @@ EXPLANATION: queries in mongoose
 
 const Tour = require("./../models/tourModel");
 
-const _queryParams = ["page", "sort", "limit", "fields"];
+const _queryParams = ["sort", "fields", "limit", "page"];
 
 // ROUTE HANDLERS
 exports.getAllTours = async function (req, res) {
@@ -39,6 +39,14 @@ exports.getAllTours = async function (req, res) {
       query = query.sort(sortBy);
     } else {
       query = query.sort("-createdAt");
+    }
+
+    // field limiting: allow clients to choose which fields appear in the response
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
     }
 
     // execute query

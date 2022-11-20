@@ -1,3 +1,9 @@
+/*
+EXPLANATION : select: false
+
+used to permanently hide sensitive data from clients
+*/
+
 const mongoose = require("mongoose");
 
 // mongoose format: BSON
@@ -57,6 +63,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false,
   },
 });
 
