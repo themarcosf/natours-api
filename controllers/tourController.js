@@ -1,20 +1,5 @@
-/*
-EXPLANATION: queries in mongoose
-
-1. methods of the Model object (eg Model.find()) return instances of the Query object
-2. instances of the Query object (Query.prototype.*) use chainable methods
-3. async/await executes the query immediately and return the documents that match the query
-
-      = SOLUTION
-      . first store the query in a temporary variable (const _query)
-      . chain all necessary methods in a final variable (const query)
-      . await the final query only after chaining 
-*/
-////////////////////////////////////////////////////////////////////////
-
+const API = require("../utils/API");
 const Tour = require("./../models/tourModel");
-
-const _queryParams = ["sort", "fields", "page", "limit"];
 
 // ALIAS MIDDLEWARE
 exports.aliasTop5 = function (req, res, next) {
@@ -25,55 +10,13 @@ exports.aliasTop5 = function (req, res, next) {
 
 // ROUTE HANDLERS
 exports.getAllTours = async function (req, res) {
-  let query;
   try {
-    // filtering
-    const _query = JSON.parse(
-      JSON.stringify({ ...req.query }).replace(
-        /\b(gt|gte|lt|lte)\b/g,
-        (match) => `$${match}`
-      )
-    );
-    _queryParams.forEach((el) => delete _query[el]);
-    query = Tour.find(_query);
-
-    // sorting: enables users to sort the results
-    //      sort=field : ascending order
-    //      sort=-field : descending order
-    //      sort=field1,field2,... : multiple criteria
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(",").join(" ");
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort("-createdAt");
-    }
-
-    // field limiting: allow clients to choose which fields appear in the response
-    if (req.query.fields) {
-      const fields = req.query.fields.split(",").join(" ");
-      query = query.select(fields);
-    } else {
-      query = query.select("-__v");
-    }
-
-    // pagination: allow page selection in data intensive APIs
-    //       page=number : page to be sent in the response
-    //       limit=number : limit of data in the response
-    //       skip(number) : amount of results to be skipped before querying data
-    //       limit(number) : maximum amount of results in the query response
-    //       eg limit=10, page=1 1-10, page=2 11-20, page=3 21-30, ...
-    const _page = Number(req.query.page) || 1;
-    const _limit = Number(req.query.limit) || 10;
-    const _skip = _limit * (_page - 1);
-    query = query.skip(_skip).limit(_limit);
-
-    if (req.query.page) {
-      const _count = await Tour.countDocuments();
-      if (_skip >= _count) throw new Error("This page does not exist");
-    }
-
-    // execute query
-    const _tours = await query;
+    const query = new API(req.query, Tour.find())
+      .filter()
+      .sort()
+      .fields()
+      .paginate();
+    const _tours = await query.mongooseQuery;
 
     res
       .status(200)
