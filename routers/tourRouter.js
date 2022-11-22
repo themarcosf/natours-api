@@ -11,6 +11,10 @@ router.param("name", [callback function (req, res, next, val)] );
 // aliasing a frequently requested route
 router.route("/top5").get(tourController.aliasTop5, tourController.getAllTours);
 
+// aggregation pipelines
+router.route("/stats").get(tourController.getStats);
+router.route("/schedule/:year").get(tourController.getSchedule);
+
 // routes middleware
 router
   .route("/")
