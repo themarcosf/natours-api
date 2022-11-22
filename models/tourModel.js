@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
 
 // mongoose format: BSON
 const tourSchema = new mongoose.Schema(
@@ -9,6 +10,7 @@ const tourSchema = new mongoose.Schema(
       trim: true,
       unique: true,
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, "duration is required"],
@@ -66,6 +68,7 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+//////////////////////////////////////////////////////////////////////////////////////
 
 /*
 Virtual Properties: 
@@ -78,6 +81,23 @@ cannot be used in queries eg Tour.find( $where: { durationWeeks: 1 })
 tourSchema.virtual("durationWeeks").get(function () {
   return Math.ceil(this.duration / 7);
 });
+//////////////////////////////////////////////////////////////////////////////////////
+
+/*
+Document middleware: 
+pre-hook: triggered before the event command [.save() or .create()]
+post-hook: triggered after the event command
+*/
+tourSchema.pre("save", function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.post("save", function (doc, next) {
+//   console.log(doc);
+//   next();
+// });
+//////////////////////////////////////////////////////////////////////////////////////
 
 const Tour = new mongoose.model("Tour", tourSchema);
 
