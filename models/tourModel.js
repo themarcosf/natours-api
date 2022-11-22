@@ -62,6 +62,10 @@ const tourSchema = new mongoose.Schema(
       default: Date.now(),
       select: false, //used to permanently hide sensitive data from clients
     },
+    vip: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -90,13 +94,29 @@ post-hook: triggered after the event command
 */
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
+  this.start = Date.now();
   next();
 });
 
-// tourSchema.post("save", function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
+tourSchema.post("save", function (doc, next) {
+  console.log(`Command clock: ${Date.now() - this.start} ms`);
+  next();
+});
+//////////////////////////////////////////////////////////////////////////////////////
+
+/*
+Query middleware: triggered before or after a certain query
+*/
+tourSchema.pre(/^find/, function (next) {
+  this.find({ vip: { $ne: true } });
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query clock: ${Date.now() - this.start} ms`);
+  next();
+});
 //////////////////////////////////////////////////////////////////////////////////////
 
 const Tour = new mongoose.model("Tour", tourSchema);

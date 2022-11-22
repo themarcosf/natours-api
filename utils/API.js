@@ -76,10 +76,12 @@ class API {
       limit(number) : maximum amount of results in the query response
       eg limit=10, page=1 1-10, page=2 11-20, page=3 21-30, ...
     */
-    const _page = Number(this.expressQuery.page) || 1;
-    const _limit = Number(this.expressQuery.limit) || 10;
-    const _skip = _limit * (_page - 1);
-    this.mongooseQuery = this.mongooseQuery.skip(_skip).limit(_limit);
+    if (this.expressQuery.page || this.expressQuery.limit) {
+      const _page = Number(this.expressQuery.page) || 1;
+      const _limit = Number(this.expressQuery.limit) || 10;
+      const _skip = _limit * (_page - 1);
+      this.mongooseQuery = this.mongooseQuery.skip(_skip).limit(_limit);
+    }
 
     return this;
   }
