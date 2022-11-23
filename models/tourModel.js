@@ -1,28 +1,87 @@
+/*
+IMPORTANT CAVEAT ABOUT MONGOOSE CUSTOM DATA VALIDATORS:
+
+inside a validator function (eg images) the THIS keyword
+is only gonna point to the current document when a NEW document
+is being created ie POST request
+
+that is not true when UPDATING a document ie PATCH request
+*/
+
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const validator = require("validator");
 
 // mongoose format: BSON
 const tourSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "name is required."],
+      required: [true, "name is required"],
+      maxlength: [40, "lengthmax is 40 digits"],
+      minlength: [10, "lengthmin is 10 digits"],
       trim: true,
       unique: true,
+      // validate: [validator.isAlpha, "name must be alphabetic"],
     },
     slug: String,
+    difficulty: {
+      type: String,
+      required: [true, "difficulty is required"],
+      maxlength: [10, "lengthmax is 10 digits"],
+      minlength: [4, "lengthmin is 4 digits"],
+      trim: true,
+      enum: {
+        values: ["easy", "medium", "difficult"],
+        message: "invalid difficulty",
+      },
+    },
+    summary: {
+      type: String,
+      required: [true, "summary is required"],
+      maxlength: [250, "lengthmax is 250 digits"],
+      minlength: [25, "lengthmin is 25 digits"],
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: [true, "description is required"],
+      maxlength: [500, "lengthmax is 500 digits"],
+      minlength: [25, "lengthmin is 25 digits"],
+      trim: true,
+    },
+    imageCover: {
+      type: String,
+      required: [true, "imageCover is required"],
+      maxlength: [20, "lengthmax is 20 digits"],
+      minlength: [4, "lengthmin is 4 digits"],
+      trim: true,
+    },
+    images: {
+      type: [String],
+      validate: {
+        validator: function (val) {
+          let _isValid;
+          val.forEach((el) => {
+            if (el !== el.trim() || el.length < 4 || el.length > 20)
+              _isValid = false;
+          });
+          return _isValid;
+        },
+        message: "invalid path: {VALUE}",
+      },
+    },
     duration: {
       type: Number,
       required: [true, "duration is required"],
+      min: [1, "duration must be above 1"],
+      max: [90, "duration must be below 90"],
     },
     maxGroupSize: {
       type: Number,
       required: [true, "maxGroupSize is required"],
-    },
-    difficulty: {
-      type: String,
-      required: [true, "difficulty is required"],
-      trim: true,
+      min: [1, "maxGroupSize must be above 1"],
+      max: [20, "maxGroupSize must be below 20"],
     },
     ratingsAverage: {
       type: Number,
@@ -31,28 +90,19 @@ const tourSchema = new mongoose.Schema(
     ratingsQuantity: {
       type: Number,
       default: 0,
-      trim: true,
     },
     price: {
       type: Number,
       required: [true, "price is required."],
+      min: [10, "price must be above 10"],
+      max: [10000, "price must be below 10000"],
     },
-    priceDiscount: Number,
-    summary: {
-      type: String,
-      required: [true, "summary is required"],
-      trim: true,
+    priceDiscount: {
+      type: Number,
+      default: 0,
+      min: [0, "priceDiscount must be above 0"],
+      max: [1, "priceDiscount must be below 1"],
     },
-    description: {
-      type: String,
-      trim: true,
-      required: [true, "description is required"],
-    },
-    imageCover: {
-      type: String,
-      required: [true, "imageCover is required"],
-    },
-    images: [String],
     startDates: {
       type: [Date],
       required: [true, "startDates is required"],
@@ -80,7 +130,7 @@ enables separation between business logic and application logic
 derivative fields not to be persisted in the database
 eg conversion from mph to kph or days to weeks
 
-cannot be used in queries eg Tour.find( $where: { durationWeeks: 1 })
+cannot be manipulated in queries eg Tour.find( $where: { durationWeeks: 1 })
 */
 tourSchema.virtual("durationWeeks").get(function () {
   return Math.ceil(this.duration / 7);
@@ -88,9 +138,13 @@ tourSchema.virtual("durationWeeks").get(function () {
 //////////////////////////////////////////////////////////////////////////////////////
 
 /*
-Document middleware: 
-pre-hook: triggered before the event command [.save() or .create()]
-post-hook: triggered after the event command
+Middlewares:
+types: document, query, aggregation, model 
+pre-hooks: triggered before the event command
+post-hooks: triggered after the event command
+
+CAVEAT: document middlewares are used for .save() or .create()
+        they do NOT work for .update() functions
 */
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
@@ -99,14 +153,10 @@ tourSchema.pre("save", function (next) {
 });
 
 tourSchema.post("save", function (doc, next) {
-  console.log(`Command clock: ${Date.now() - this.start} ms`);
+  console.log(`Document middleware clock: ${Date.now() - this.start} ms`);
   next();
 });
-//////////////////////////////////////////////////////////////////////////////////////
 
-/*
-Query middleware: triggered before or after a certain query
-*/
 tourSchema.pre(/^find/, function (next) {
   this.find({ vip: { $ne: true } });
   this.start = Date.now();
@@ -114,10 +164,14 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query clock: ${Date.now() - this.start} ms`);
+  console.log(`Query middleware clock: ${Date.now() - this.start} ms`);
   next();
 });
-//////////////////////////////////////////////////////////////////////////////////////
+
+tourSchema.pre("aggregate", function (next) {
+  this._pipeline.unshift({ $match: { vip: { $ne: true } } });
+  next();
+});
 
 const Tour = new mongoose.model("Tour", tourSchema);
 
