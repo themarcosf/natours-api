@@ -1,4 +1,4 @@
-const API = require("../utils/API");
+const { QueryHelpers } = require("../utils/lib");
 const Tour = require("./../models/tourModel");
 ////////////////////////////////////////////////////////
 
@@ -17,7 +17,7 @@ ROUTE HANDLERS
 */
 exports.getAllTours = async function (req, res) {
   try {
-    const query = new API(req.query, Tour.find())
+    const query = new QueryHelpers(req.query, Tour.find())
       .filter()
       .sort()
       .fields()
