@@ -22,7 +22,7 @@ class QueryHelpers {
   filter() {
     /**
      * filter: allows users to filter data
-     *   advanced filtering: filter[logical operator] eg duration[gte]
+     * advanced filtering: filter[logical operator] eg duration[gte]
      */
     const _query = JSON.parse(
       JSON.stringify({ ...this.expressQuery }).replace(
@@ -89,6 +89,10 @@ class QueryHelpers {
 
 /**
  * @property isOperational : distinguish from other programming errors
+ *
+ * Error.captureStackTrace : creates the stack property on Error instance
+ * @param this : target object
+ * @param this.constructor : error class
  */
 class CustomError extends Error {
   constructor(msg, statusCode) {
@@ -96,6 +100,8 @@ class CustomError extends Error {
     this.statusCode = statusCode;
     this.status = String(this.statusCode).startsWith(4) ? "fail" : "error";
     this.isOperational = true;
+
+    Error.captureStackTrace(this, this.constructor);
   }
 }
 
