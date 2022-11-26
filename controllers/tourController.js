@@ -1,4 +1,5 @@
 const { QueryHelpers } = require("../utils/lib");
+const asyncHandler = require("./../utils/middleware");
 const Tour = require("./../models/tourModel");
 ////////////////////////////////////////////////////////
 
@@ -64,51 +65,31 @@ exports.getTour = async function (req, res) {
   }
 };
 
-exports.createNewTour = async function (req, res) {
-  try {
-    const _tour = await Tour.create(req.body);
-    res
-      .status(201)
-      .json({
-        status: "Success",
-        data: { tour: _tour },
-      })
-      .end();
-  } catch (err) {
-    res
-      .status(400)
-      .json({
-        status: "Fail",
-        message: err,
-      })
-      .end();
-  }
-};
+exports.createNewTour = asyncHandler(async function (req, res, next) {
+  const _tour = await Tour.create(req.body);
+  res
+    .status(201)
+    .json({
+      status: "Success",
+      data: { tour: _tour },
+    })
+    .end();
+});
 
-exports.updateTour = async function (req, res) {
-  try {
-    const _tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+exports.updateTour = asyncHandler(async function (req, res) {
+  const _tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
 
-    res
-      .status(200)
-      .json({
-        status: "sucess",
-        data: { _tour },
-      })
-      .end();
-  } catch (err) {
-    res
-      .status(400)
-      .json({
-        status: "fail",
-        message: err,
-      })
-      .end();
-  }
-};
+  res
+    .status(200)
+    .json({
+      status: "sucess",
+      data: { _tour },
+    })
+    .end();
+});
 
 exports.deleteTour = async function (req, res) {
   try {
