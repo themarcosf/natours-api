@@ -88,7 +88,7 @@ class QueryHelpers {
 }
 
 /**
- * @property isOperational : distinguish from other programming errors
+ * @property isOperational : distinguish operational error from other unknown errors
  *
  * Error.captureStackTrace : creates the stack property on Error instance
  * @param this : target object
