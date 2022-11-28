@@ -1,13 +1,30 @@
+/**
+ * OPPORTUNITIES FOR IMPROVEMENT
+ *
+ * better descriptions for mongoDB and mongoose errors
+ * define different error severity levels eg low, medium, high, critical
+ * email systems administrator about critical errors
+ */
+
 const devError = (err, res) =>
   res
     .status(err.statusCode)
     .json({
+      status: err.status,
       stack: err.stack,
-      operational: err.isOperational,
+      message: err.message,
     })
     .end();
 
-const prodError = (err, res) =>
+const prodError = (err, res) => {
+  // operational errors from mongoDB and mongoose
+  if (
+    err.name === "CastError" ||
+    err.name === "ValidationError" ||
+    err.code === 11000
+  )
+    err.isOperational = true;
+
   err.isOperational
     ? res
         .status(err.statusCode)
@@ -17,6 +34,7 @@ const prodError = (err, res) =>
         })
         .end()
     : unknownError(err, res);
+};
 
 const unknownError = (err, res) => {
   console.error(`💥 ERROR: ${err}`);

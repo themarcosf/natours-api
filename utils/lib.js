@@ -105,4 +105,10 @@ class CustomError extends Error {
   }
 }
 
-module.exports = { QueryHelpers, CustomError };
+const terminate = function (err, server) {
+  console.log(err.name, err.message);
+
+  if (server) server.close(() => process.exit(-1));
+};
+
+module.exports = { QueryHelpers, CustomError, terminate };
