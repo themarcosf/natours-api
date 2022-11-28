@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const { CustomError } = require("./utils/lib");
-const errHandler = require("./controllers/errController");
+const errController = require("./controllers/errController");
 const userRouter = require("./routers/userRouter");
 const tourRouter = require("./routers/tourRouter");
 ////////////////////////////////////////////////////////////////////////
@@ -21,6 +21,6 @@ app.all("/*", (req, res, next) =>
 );
 
 // global error handling middleware
-app.use(errHandler);
+app.use(errController);
 
 module.exports = app;

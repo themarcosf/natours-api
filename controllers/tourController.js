@@ -1,10 +1,9 @@
-const { QueryHelpers, CustomError } = require("../utils/lib");
-const asyncHandler = require("./../utils/middleware");
+const { QueryHelpers, CustomError, asyncHandler } = require("../utils/lib");
 const Tour = require("./../models/tourModel");
 ////////////////////////////////////////////////////////
 
 /**
- *ALIAS MIDDLEWARE: provides a route for specific queries
+ * ALIAS MIDDLEWARE: provides a route for specific queries
  */
 exports.aliasTop5 = function (req, res, next) {
   req.query.sort = "-ratingsAverage,price,-maxGroupSize";
@@ -14,7 +13,7 @@ exports.aliasTop5 = function (req, res, next) {
 ////////////////////////////////////////////////////////
 
 /**
- *ROUTE HANDLERS
+ * ROUTE HANDLERS
  */
 exports.getAllTours = asyncHandler(async function (req, res, next) {
   const query = new QueryHelpers(req.query, Tour.find())
@@ -92,10 +91,10 @@ exports.deleteTour = asyncHandler(async function (req, res, next) {
 ////////////////////////////////////////////////////////
 
 /**
- *AGGREGATION PIPELINES: define a pipeline that all documents from a collection go
- *through to be proccessed and transformed into aggregated results eg average, min, max, ...
+ * AGGREGATION PIPELINES: define a pipeline that all documents from a collection go
+ * through to be proccessed and transformed into aggregated results eg average, min, max, ...
  *
- *function param: stages[]
+ * function param: stages[]
  */
 exports.getStats = asyncHandler(async function (req, res, next) {
   const stats = await Tour.aggregate([

@@ -10,8 +10,6 @@
  *       . chain all necessary methods in a final variable (const query)
  *       . await the final query only after chaining
  */
-////////////////////////////////////////////////////////////////////////
-
 class QueryHelpers {
   constructor(expressQuery, mongooseQuery) {
     this.expressQuery = expressQuery;
@@ -86,6 +84,7 @@ class QueryHelpers {
     return this;
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @property isOperational : distinguish operational error from other unknown errors
@@ -104,11 +103,27 @@ class CustomError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * handles uncaught (sync) exceptions and (async) rejections
+ */
 const terminate = function (err, server) {
   console.log(err.name, err.message);
 
   if (server) server.close(() => process.exit(-1));
 };
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { QueryHelpers, CustomError, terminate };
+/**
+ * wrapper function to catch errors in async functions
+ *
+ * @param {function} fn
+ * @returns void
+ */
+const asyncHandler = function (fn) {
+  return (req, res, next) => fn(req, res, next).catch(next);
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+module.exports = { QueryHelpers, CustomError, terminate, asyncHandler };

@@ -8,6 +8,7 @@ require("dotenv").config({ path: "./config.env" });
 process.on("uncaughtException", (err) => terminate(err));
 //////////////////////////////////////////////////////////////////
 
+// database config
 const mongoose = require("mongoose");
 
 // remote database
@@ -24,12 +25,12 @@ mongoose
   .then((conn) => console.log(`DB connected to: ${conn.connections[0].name}`));
 
 /**
- *REMINDER: deprecation warnings
- *{
- *  useNewUrlParser: true,
- *  useCreateIndex: true,
- *  useFindAndModify: false,
- *}
+ * REMINDER: deprecation warnings
+ * {
+ *   useNewUrlParser: true,
+ *   useCreateIndex: true,
+ *   useFindAndModify: false,
+ * }
  */
 //////////////////////////////////////////////////////////////////
 

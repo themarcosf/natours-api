@@ -4,9 +4,9 @@ const tourController = require("../controllers/tourController");
 const router = express.Router();
 
 /*
-EXAMPLE: param middleware
-router.param("name", [callback function (req, res, next, val)] );
-*/
+ * EXAMPLE: param middleware
+ * router.param("name", [callback function (req, res, next, val)] );
+ */
 
 // aliasing a frequently requested route
 router.route("/top5").get(tourController.aliasTop5, tourController.getAllTours);
