@@ -1,4 +1,4 @@
-const { QueryHelpers } = require("../utils/lib");
+const { QueryHelpers, CustomError } = require("../utils/lib");
 const asyncHandler = require("./../utils/middleware");
 const Tour = require("./../models/tourModel");
 ////////////////////////////////////////////////////////
@@ -36,6 +36,9 @@ exports.getAllTours = asyncHandler(async function (req, res, next) {
 
 exports.getTour = asyncHandler(async function (req, res, next) {
   const _tour = await Tour.findById(req.params.id);
+
+  if (!_tour) return next(new CustomError("ID not found", 404));
+
   res
     .status(200)
     .json({
@@ -62,6 +65,8 @@ exports.updateTour = asyncHandler(async function (req, res, next) {
     runValidators: true,
   });
 
+  if (!_tour) return next(new CustomError("ID not found", 404));
+
   res
     .status(200)
     .json({
@@ -72,7 +77,10 @@ exports.updateTour = asyncHandler(async function (req, res, next) {
 });
 
 exports.deleteTour = asyncHandler(async function (req, res, next) {
-  await Tour.findByIdAndDelete(req.params.id);
+  const _tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!_tour) return next(new CustomError("ID not found", 404));
+
   res
     .status(200)
     .json({
@@ -111,6 +119,8 @@ exports.getStats = asyncHandler(async function (req, res, next) {
     //   $match: { _id: { $ne: "EASY" } },
     // },
   ]);
+
+  if (!stats) return next(new CustomError("ID not found", 404));
 
   res
     .status(200)
@@ -153,6 +163,8 @@ exports.getSchedule = asyncHandler(async function (req, res, next) {
       $limit: 12,
     },
   ]);
+
+  if (!schedule) return next(new CustomError("No tour found", 404));
 
   res
     .status(200)
