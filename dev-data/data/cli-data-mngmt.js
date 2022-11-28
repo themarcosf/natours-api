@@ -1,6 +1,6 @@
 /*
-command line script for importing and deleting collections of data
-*/
+ *command line script for importing and deleting collections of data
+ */
 
 // required modules
 const dotenv = require("dotenv");

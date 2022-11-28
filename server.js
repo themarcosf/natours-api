@@ -17,14 +17,14 @@ mongoose
   .connect(DB)
   .then((conn) => console.log(`DB connected to: ${conn.connections[0].name}`));
 
-/*
-REMINDER: deprecation warnings
-{
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-}
-*/
+/**
+ *REMINDER: deprecation warnings
+ *{
+ *  useNewUrlParser: true,
+ *  useCreateIndex: true,
+ *  useFindAndModify: false,
+ *}
+ */
 //////////////////////////////////////////////////////////////////
 
 // server

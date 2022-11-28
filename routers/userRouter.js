@@ -8,6 +8,7 @@ EXAMPLE: param middleware
 router.param("name", [callback function (req, res, next, val)] );
 */
 
+// routes middleware
 router
   .route("/")
   .get(userController.getAllUsers)

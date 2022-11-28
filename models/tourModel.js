@@ -1,12 +1,12 @@
-/*
-IMPORTANT CAVEAT ABOUT MONGOOSE CUSTOM DATA VALIDATORS:
-
-inside a validator function (eg images) the THIS keyword
-is only gonna point to the current document when a NEW document
-is being created ie POST request
-
-that is not true when UPDATING a document ie PATCH request
-*/
+/**
+ *IMPORTANT CAVEAT ABOUT MONGOOSE CUSTOM DATA VALIDATORS:
+ *
+ *inside a validator function (eg images) the THIS keyword
+ *is only gonna point to the current document when a NEW document
+ *is being created ie POST request
+ *
+ *that is not true when UPDATING a document ie PATCH request
+ */
 
 const mongoose = require("mongoose");
 const slugify = require("slugify");
@@ -124,28 +124,28 @@ const tourSchema = new mongoose.Schema(
 );
 //////////////////////////////////////////////////////////////////////////////////////
 
-/*
-Virtual Properties: 
-enables separation between business logic and application logic
-derivative fields not to be persisted in the database
-eg conversion from mph to kph or days to weeks
-
-cannot be manipulated in queries eg Tour.find( $where: { durationWeeks: 1 })
-*/
+/**
+ *Virtual Properties:
+ *enables separation between business logic and application logic
+ *derivative fields not to be persisted in the database
+ *eg conversion from mph to kph or days to weeks
+ *
+ *cannot be manipulated in queries eg Tour.find( $where: { durationWeeks: 1 })
+ */
 tourSchema.virtual("durationWeeks").get(function () {
   return Math.ceil(this.duration / 7);
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
-/*
-Middlewares:
-types: document, query, aggregation, model 
-pre-hooks: triggered before the event command
-post-hooks: triggered after the event command
-
-CAVEAT: document middlewares are used for .save() or .create()
-        they do NOT work for .update() functions
-*/
+/**
+ *Middlewares:
+ *types: document, query, aggregation, model
+ *pre-hooks: triggered before the event command
+ *post-hooks: triggered after the event command
+ *
+ *CAVEAT: document middlewares are used for .save() or .create()
+ *        they do NOT work for .update() functions
+ */
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   this.start = Date.now();
