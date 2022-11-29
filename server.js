@@ -1,15 +1,18 @@
-const { terminate } = require("./utils/lib");
-
-// environment variables
 require("dotenv").config({ path: "./config.env" });
+const app = require("./app");
+const mongoose = require("mongoose");
+const { terminate } = require("./utils/lib");
 //////////////////////////////////////////////////////////////////
 
-// unhandled (sync) exceptions handler
+/**
+ * unhandled (sync) exceptions handler
+ */
 process.on("uncaughtException", (err) => terminate(err));
 //////////////////////////////////////////////////////////////////
 
-// database config
-const mongoose = require("mongoose");
+/**
+ * database config
+ */
 
 // remote database
 // const DB = process.env.DATABASE.replace(
@@ -34,8 +37,9 @@ mongoose
  */
 //////////////////////////////////////////////////////////////////
 
-// server
-const app = require("./app");
+/**
+ * server config
+ */
 
 const server = app.listen(
   process.env.PORT || 8000,
@@ -44,5 +48,7 @@ const server = app.listen(
 );
 //////////////////////////////////////////////////////////////////
 
-// unhandled (async) rejections handler
+/**
+ * unhandled (async) rejections handler
+ */
 process.on("unhandledRejection", (err) => terminate(err, server));

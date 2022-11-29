@@ -110,8 +110,8 @@ class CustomError extends Error {
  */
 const terminate = function (err, server) {
   console.log(err.name, err.message);
-
-  if (server) server.close(() => process.exit(-1));
+  if (server) server.close();
+  process.exit(-1);
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
