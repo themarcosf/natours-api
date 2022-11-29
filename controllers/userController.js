@@ -1,5 +1,5 @@
 // ROUTE HANDLERS
-exports.getAllUsers = function (req, res) {
+exports.getAllUsers = function (req, res, next) {
   res
     .status(500)
     .json({
@@ -11,7 +11,7 @@ exports.getAllUsers = function (req, res) {
     .end();
 };
 
-exports.getUser = function (req, res) {
+exports.getUser = function (req, res, next) {
   res
     .status(500)
     .json({
@@ -23,7 +23,7 @@ exports.getUser = function (req, res) {
     .end();
 };
 
-exports.createNewUser = function (req, res) {
+exports.createUser = function (req, res, next) {
   res
     .status(500)
     .json({
@@ -35,7 +35,7 @@ exports.createNewUser = function (req, res) {
     .end();
 };
 
-exports.updateUser = function (req, res) {
+exports.updateUser = function (req, res, next) {
   res
     .status(500)
     .json({
@@ -47,7 +47,7 @@ exports.updateUser = function (req, res) {
     .end();
 };
 
-exports.deleteUser = function (req, res) {
+exports.deleteUser = function (req, res, next) {
   res
     .status(500)
     .json({

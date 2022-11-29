@@ -10,7 +10,6 @@
 
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-const validator = require("validator");
 
 // mongoose format: BSON
 const tourSchema = new mongoose.Schema(
@@ -22,7 +21,6 @@ const tourSchema = new mongoose.Schema(
       minlength: [10, "lengthmin is 10 digits"],
       trim: true,
       unique: true,
-      // validate: [validator.isAlpha, "name must be alphabetic"],
     },
     slug: String,
     difficulty: {
