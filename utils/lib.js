@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 /**
  * EXPLANATION: queries in mongoose
  *
@@ -126,4 +128,21 @@ const asyncHandler = function (fn) {
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-module.exports = { QueryHelpers, CustomError, terminate, asyncHandler };
+/**
+ * @param {mongoDB _id} userId
+ * @returns token
+ */
+const jwtTokenGenerator = function (userId) {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES,
+  });
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+module.exports = {
+  QueryHelpers,
+  CustomError,
+  terminate,
+  asyncHandler,
+  jwtTokenGenerator,
+};

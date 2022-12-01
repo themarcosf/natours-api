@@ -15,7 +15,7 @@ process.on("uncaughtException", (err) => terminate(err));
  */
 
 // remote database
-const DB = process.env.DATABASE.replace(
+const DB = process.env.DATABASE_REMOTE.replace(
   "<PASSWORD>",
   process.env.DATABASE_PASSWORD
 );

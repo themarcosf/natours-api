@@ -13,6 +13,7 @@ const router = express.Router();
  * routes middleware
  */
 router.post("/signup", authController.signup);
+router.post("/login", authController.login);
 
 router
   .route("/")

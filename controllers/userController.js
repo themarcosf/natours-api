@@ -1,15 +1,21 @@
+const { asyncHandler } = require("../utils/lib");
+const User = require("./../models/userModel");
+
 // ROUTE HANDLERS
-exports.getAllUsers = function (req, res, next) {
+exports.getAllUsers = asyncHandler(async function (req, res, next) {
+  const _data = await User.find();
+
   res
-    .status(500)
+    .status(200)
     .json({
-      status: "Error",
+      status: "success",
+      results: _data.length,
       data: {
-        message: "TODO",
+        users: _data,
       },
     })
     .end();
-};
+});
 
 exports.getUser = function (req, res, next) {
   res
