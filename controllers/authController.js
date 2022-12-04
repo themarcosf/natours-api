@@ -17,8 +17,10 @@ exports.signup = asyncHandler(async function (req, res, next) {
   const _user = await User.create({
     name: req.body.name,
     email: req.body.email,
+    photo: req.body.photo,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    role: req.body.role,
   });
 
   res
@@ -67,14 +69,13 @@ exports.login = asyncHandler(async function (req, res, next) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * protect middleware :
- * handles authorization before routes access
+ * authentication middleware : handles authentication before routes access
+ * authorization middleware : handles authorization to specific routes by certain users eg admin
  *
- * EXPLANATION :
- * promisify(fn) : node built-in method to avoid callback pattern in async/await functions
+ * PROMISIFY (fn) : node built-in method to avoid callback pattern in async/await functions
  */
-exports.protect = asyncHandler(async function (req, res, next) {
-  const _error = new CustomError("Authorization failed", 401);
+exports.authenticate = asyncHandler(async function (req, res, next) {
+  const _error = new CustomError("Authentication failed", 401);
   // check headers for authorization token
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer")) return next(_error);
@@ -87,7 +88,8 @@ exports.protect = asyncHandler(async function (req, res, next) {
   // verify user status
   const _user = await User.findById(_payload.id)
     .select("+status")
-    .select("+passwordTimestamp");
+    .select("+passwordTimestamp")
+    .select("+role");
 
   if (!_user || _user.status === "inactive") return next(_error);
 
@@ -98,3 +100,17 @@ exports.protect = asyncHandler(async function (req, res, next) {
   req.user = _user;
   next();
 });
+
+/**
+ * PASSING ARGUMENTS INTO MIDDLEWARE FUNCTIONS
+ *
+ * 1. create wrapper function that returns middleware function
+ * 2. middleware gets access to wrapper function parameters due to closure
+ */
+exports.authorization = (...roles) => {
+  return asyncHandler(async function (req, res, next) {
+    if (!roles.includes(req.user.role))
+      return next(new CustomError("Authorization failed", 403));
+    next();
+  });
+};

@@ -17,13 +17,33 @@ router.post("/login", authController.login);
 
 router
   .route("/")
-  .get(userController.getAllUsers)
-  .post(userController.createUser);
+  .get(
+    authController.authenticate,
+    authController.authorization("admin"),
+    userController.getAllUsers
+  )
+  .post(
+    authController.authenticate,
+    authController.authorization("admin"),
+    userController.createUser
+  );
 
 router
   .route("/:id")
-  .get(userController.getUser)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+  .get(
+    authController.authenticate,
+    authController.authorization("admin"),
+    userController.getUser
+  )
+  .patch(
+    authController.authenticate,
+    authController.authorization("admin"),
+    userController.updateUser
+  )
+  .delete(
+    authController.authenticate,
+    authController.authorization("admin"),
+    userController.deleteUser
+  );
 
 module.exports = router;

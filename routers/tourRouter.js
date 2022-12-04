@@ -25,13 +25,25 @@ router.route("/schedule/:year").get(tourController.getSchedule);
  */
 router
   .route("/")
-  .get(authController.protect, tourController.getAllTours)
-  .post(tourController.createNewTour);
+  .get(tourController.getAllTours)
+  .post(
+    authController.authenticate,
+    authController.authorization("admin", "lead-guide"),
+    tourController.createNewTour
+  );
 
 router
   .route("/:id")
   .get(tourController.getTour)
-  .patch(tourController.updateTour)
-  .delete(tourController.deleteTour);
+  .patch(
+    authController.authenticate,
+    authController.authorization("admin", "lead-guide"),
+    tourController.updateTour
+  )
+  .delete(
+    authController.authenticate,
+    authController.authorization("admin", "lead-guide"),
+    tourController.deleteTour
+  );
 
 module.exports = router;

@@ -36,6 +36,24 @@ const userSchema = new mongoose.Schema({
     type: String,
     select: false, //used to permanently hide sensitive data from clients
   },
+  status: {
+    type: String,
+    default: "active",
+    enum: {
+      values: ["active", "inactive"],
+      message: "Invalid status",
+    },
+    select: false, // used to permanently hide sensitive data from clients
+  },
+  role: {
+    type: String,
+    default: "user",
+    enum: {
+      values: ["user", "guide", "lead-guide", "admin"],
+      message: "Invalid user role",
+    },
+    select: false, // used to permanently hide sensitive data from clients
+  },
   password: {
     type: String,
     required: [true, "password is required"],
@@ -52,15 +70,6 @@ const userSchema = new mongoose.Schema({
       message: "Invalid password",
     },
     select: false, //used to permanently hide sensitive data from clients
-  },
-  status: {
-    type: String,
-    default: "active",
-    enum: {
-      values: ["active", "inactive"],
-      message: "Invalid status",
-    },
-    select: false, // used to permanently hide sensitive data from clients
   },
   passwordTimestamp: {
     type: Date,
