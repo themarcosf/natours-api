@@ -34,13 +34,13 @@ const userSchema = new mongoose.Schema({
   },
   photo: {
     type: String,
-    select: false,
+    select: false, //used to permanently hide sensitive data from clients
   },
   password: {
     type: String,
     required: [true, "password is required"],
     minlength: [8, "lengthmin is 8 digits"],
-    select: false,
+    select: false, //used to permanently hide sensitive data from clients
   },
   passwordConfirm: {
     type: String,
@@ -51,6 +51,19 @@ const userSchema = new mongoose.Schema({
       },
       message: "Invalid password",
     },
+    select: false, //used to permanently hide sensitive data from clients
+  },
+  status: {
+    type: String,
+    default: "active",
+    enum: {
+      values: ["active", "inactive"],
+      message: "Invalid status",
+    },
+    select: false, // used to permanently hide sensitive data from clients
+  },
+  passwordTimestamp: {
+    type: Date,
     select: false,
   },
 });
@@ -58,25 +71,40 @@ const userSchema = new mongoose.Schema({
 
 /**
  * Encryption middleware using document pre-hooks
+ *
+ * Middlewares:
+ * types: document, query, aggregation, model
+ * pre-hooks: triggered before the event command
+ * post-hooks: triggered after the event command
+ *
+ * CAVEAT: document middlewares are used for .save() or .create()
+ *         they do NOT work for .update() functions
  */
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
+  this.passwordTimestamp = Date.now();
   next();
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Instance method: available in all documents of its collection
- * checks if a given password is the same as the one stored in the document
+ * Instance methods: available in all documents of its collection
+ *
+ * validatePassword: checks if a given password is the same as the one stored in the document
+ * validateTokenTimestamp: checks if password  modified after token creation
  */
 userSchema.methods.validatePassword = async function (
   givenPassword,
   storedPassword
 ) {
   return await bcrypt.compare(givenPassword, storedPassword);
+};
+
+userSchema.methods.validateTokenTimestamp = function (tknTimestamp) {
+  return tknTimestamp < Math.floor(this.passwordTimestamp.getTime() / 1000);
 };
 //////////////////////////////////////////////////////////////////////////////////////
 

@@ -21,6 +21,8 @@ const prodError = (err, res) => {
   if (
     err.name === "CastError" ||
     err.name === "ValidationError" ||
+    err.name === "JsonWebTokenError" ||
+    err.name === "TokenExpiredError" ||
     err.code === 11000
   )
     err.isOperational = true;
@@ -31,6 +33,7 @@ const prodError = (err, res) => {
         .json({
           status: err.status,
           message: err.message,
+          operational: err.isOperational,
         })
         .end()
     : unknownError(err, res);
