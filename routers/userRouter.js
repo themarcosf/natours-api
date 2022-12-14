@@ -10,11 +10,17 @@ const router = express.Router();
  */
 
 /**
- * routes middleware
+ * auth middleware
  */
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 
+router.post("/forgotPassword", authController.forgotPassword);
+router.post("/resetPassword", authController.resetPassword);
+
+/**
+ * general purpose middleware
+ */
 router
   .route("/")
   .get(

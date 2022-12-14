@@ -108,9 +108,31 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
  * 2. middleware gets access to wrapper function parameters due to closure
  */
 exports.authorization = (...roles) => {
-  return asyncHandler(async function (req, res, next) {
+  return asyncHandler((req, res, next) => {
     if (!roles.includes(req.user.role))
       return next(new CustomError("Authorization failed", 403));
     next();
   });
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Password reset functionalities
+ */
+exports.forgotPassword = asyncHandler(async function (req, res, next) {
+  // get user based on email
+  const _user = await User.findOne({ email: req.body.email });
+  if (!_user) return next(new Error("Email not found", 404));
+
+  // generate random reset token and save
+  const _resetToken = _user.generatorPasswordResetToken();
+  await _user.save({ validateBeforeSave: false });
+
+  // send email to user with token
+  res.status(200).end();
+});
+
+exports.resetPassword = function (req, res, next) {
+  next();
 };

@@ -10,6 +10,7 @@
  */
 
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
@@ -43,7 +44,7 @@ const userSchema = new mongoose.Schema({
       values: ["active", "inactive"],
       message: "Invalid status",
     },
-    select: false, // used to permanently hide sensitive data from clients
+    select: false,
   },
   role: {
     type: String,
@@ -52,13 +53,13 @@ const userSchema = new mongoose.Schema({
       values: ["user", "guide", "lead-guide", "admin"],
       message: "Invalid user role",
     },
-    select: false, // used to permanently hide sensitive data from clients
+    select: false,
   },
   password: {
     type: String,
     required: [true, "password is required"],
     minlength: [8, "lengthmin is 8 digits"],
-    select: false, //used to permanently hide sensitive data from clients
+    select: false,
   },
   passwordConfirm: {
     type: String,
@@ -69,12 +70,14 @@ const userSchema = new mongoose.Schema({
       },
       message: "Invalid password",
     },
-    select: false, //used to permanently hide sensitive data from clients
+    select: false,
   },
   passwordTimestamp: {
     type: Date,
     select: false,
   },
+  passwordResetToken: { type: String, select: false },
+  passwordResetExpires: { type: Date, select: false },
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -100,10 +103,11 @@ userSchema.pre("save", async function (next) {
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Instance methods: available in all documents of its collection
+ * Instance methods: available in all collection documents
  *
- * validatePassword: checks if a given password is the same as the one stored in the document
- * validateTokenTimestamp: checks if password  modified after token creation
+ * validatePassword: check if given password is equal to stored password
+ * validateTokenTimestamp: check if password was modified after token creation
+ * generatorPasswordResetToken: create new token used to reset password
  */
 userSchema.methods.validatePassword = async function (
   givenPassword,
@@ -115,6 +119,26 @@ userSchema.methods.validatePassword = async function (
 userSchema.methods.validateTokenTimestamp = function (tknTimestamp) {
   return tknTimestamp < Math.floor(this.passwordTimestamp.getTime() / 1000);
 };
+
+userSchema.methods.generatorPasswordResetToken = function () {
+  // create simple reset token
+  const _resetToken = crypto.randomBytes(32).toString("hex");
+
+  // hash reset token before storage
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(_resetToken)
+    .digest("hex");
+
+  console.log({ _resetToken, passwordResetToken: this.passwordResetToken });
+
+  // set reset token expiration to 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  // return plaintext token
+  return _resetToken;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////
 
 const User = new mongoose.model("User", userSchema);

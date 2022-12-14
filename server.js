@@ -15,13 +15,13 @@ process.on("uncaughtException", (err) => terminate(err));
  */
 
 // remote database
-// const DB = process.env.DATABASE_REMOTE.replace(
-//   "<PASSWORD>",
-//   process.env.DATABASE_PASSWORD
-// );
+const DB = process.env.DATABASE_REMOTE.replace(
+  "<PASSWORD>",
+  process.env.DATABASE_PASSWORD
+);
 
 // local database
-const DB = process.env.DATABASE_LOCAL;
+// const DB = process.env.DATABASE_LOCAL;
 
 mongoose
   .connect(DB)
