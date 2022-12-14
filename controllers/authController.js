@@ -4,6 +4,7 @@ const User = require("./../models/userModel");
 const {
   asyncHandler,
   CustomError,
+  emailHandler,
   jwtTokenGenerator,
 } = require("./../utils/lib");
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,7 +131,27 @@ exports.forgotPassword = asyncHandler(async function (req, res, next) {
   await _user.save({ validateBeforeSave: false });
 
   // send email to user with token
-  res.status(200).end();
+  try {
+    const _resetUrl = `http://${process.env.HOST}:${process.env.PORT}/api/v1/users/resetPassword/${_resetToken}`;
+    await emailHandler({
+      email: _user.email,
+      subject: "Reset password",
+      message: `Click the link to reset password: ${_resetUrl}`,
+    });
+
+    res
+      .status(200)
+      .send({
+        status: "success",
+      })
+      .end();
+  } catch (err) {
+    _user.passwordResetToken = undefined;
+    _user.passwordResetExpires = undefined;
+    await _user.save({ validateBeforeSave: false });
+
+    return next(new CustomError("Error sending email.", 500));
+  }
 });
 
 exports.resetPassword = function (req, res, next) {

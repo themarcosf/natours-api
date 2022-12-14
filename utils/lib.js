@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 /**
  * EXPLANATION: queries in mongoose
@@ -129,6 +130,47 @@ const asyncHandler = function (fn) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @notice this function is used throughout application to handle emails
+ *
+ * @param options : destination address, email subject, context, etc
+ *
+ * @dev nodemailer provides well-known email services (eg gmail) pre-configured
+ * @dev activate in gmail account: "less secure app" option
+ * @dev mailtrap.io: staging and dev environment for email testing and validation
+ */
+const emailHandler = async function (options) {
+  // create transporter (smtp server)
+  const _gmailTransporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: process.env.EMAIL_USERNAME,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const _mailTrapTransporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT,
+    auth: {
+      user: process.env.EMAIL_USERNAME,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  // define email options
+  const _options = {
+    from: "Natours Co. <customers@natours.com>",
+    to: options.email,
+    subject: options.subject,
+    text: options.message,
+  };
+
+  // send email using nodemailer
+  await _mailTrapTransporter.sendMail(_options);
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
  * @param {mongoDB _id} userId
  * @returns token
  */
@@ -144,5 +186,6 @@ module.exports = {
   CustomError,
   terminate,
   asyncHandler,
+  emailHandler,
   jwtTokenGenerator,
 };
