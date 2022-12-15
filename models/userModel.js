@@ -97,7 +97,17 @@ userSchema.pre("save", async function (next) {
 
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
-  this.passwordTimestamp = Date.now();
+  next();
+});
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || this.isNew()) return next();
+
+  // in practice, saving to database can be slower than creating new JWT and
+  // may result in changed password's timestamp being set 'after' JWT creation
+  // making it so the user could not login using the new token
+  // QUICK HACK : subtract 1 second from password timestamp
+  this.passwordTimestamp = Date.now() - 1000;
   next();
 });
 //////////////////////////////////////////////////////////////////////////////////////
