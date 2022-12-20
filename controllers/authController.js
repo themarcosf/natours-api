@@ -3,10 +3,10 @@ const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const User = require("./../models/userModel");
 const {
-  asyncHandler,
   CustomError,
+  asyncHandler,
   emailHandler,
-  jwtTokenGenerator,
+  setupResponse,
 } = require("./../utils/lib");
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -25,17 +25,7 @@ exports.signup = asyncHandler(async function (req, res, next) {
     role: req.body.role,
   });
 
-  res
-    .status(201)
-    .json({
-      status: "success",
-      token: jwtTokenGenerator(_user._id),
-      data: {
-        name: _user.name,
-        email: _user.email,
-      },
-    })
-    .end();
+  setupResponse(_user, 201, res);
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -52,21 +42,11 @@ exports.login = asyncHandler(async function (req, res, next) {
     return next(new CustomError("Email or password not provided", 400));
 
   // validate user credentials
-  const user = await User.findOne({ email }).select("+password");
-  if (!user || !(await user.validatePassword(password, user.password)))
+  const _user = await User.findOne({ email }).select("+password");
+  if (!_user || !(await _user.validatePassword(password, _user.password)))
     return next(new CustomError("Incorrect email or password", 400));
 
-  res
-    .status(200)
-    .json({
-      status: "sucess",
-      token: jwtTokenGenerator(user._id),
-      data: {
-        name: user.name,
-        email: user.email,
-      },
-    })
-    .end();
+  setupResponse(_user, 200, res);
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -120,7 +100,7 @@ exports.authorization = (...roles) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Password reset functionalities
+ * Password management middleware
  */
 exports.forgotPassword = asyncHandler(async function (req, res, next) {
   // get user based on email
@@ -176,16 +156,27 @@ exports.resetPassword = asyncHandler(async function (req, res, next) {
   _user.passwordResetExpires = undefined;
   await _user.save();
 
-  // log user in, send JWT
-  res
-    .status(200)
-    .json({
-      status: "success",
-      token: jwtTokenGenerator(_user._id),
-      data: {
-        name: _user.name,
-        email: _user.email,
-      },
-    })
-    .end();
+  setupResponse(_user, 200, res);
+});
+
+/**
+ * @notice security best practice: require and verify current password before update
+ */
+exports.updatePassword = asyncHandler(async function (req, res, next) {
+  // get user from collection
+  const _user = await User.findById(req.user._id).select("+password");
+
+  // verify posted current password
+  if (
+    !(await _user.validatePassword(req.body.passwordCurrent, _user.password))
+  ) {
+    return next(new CustomError("Incorrect password", 401));
+  }
+
+  // update password
+  _user.password = req.body.password;
+  _user.passwordConfirm = req.body.passwordConfirm;
+  await _user.save();
+
+  setupResponse(_user, 200, res);
 });

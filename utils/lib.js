@@ -181,11 +181,27 @@ const jwtTokenGenerator = function (userId) {
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+const setupResponse = function (_user, _statusCode, _res) {
+  return _res
+    .status(_statusCode)
+    .json({
+      status: "success",
+      token: jwtTokenGenerator(_user._id),
+      data: {
+        name: _user.name,
+        email: _user.email,
+      },
+    })
+    .end();
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 module.exports = {
   QueryHelpers,
   CustomError,
-  terminate,
   asyncHandler,
   emailHandler,
   jwtTokenGenerator,
+  setupResponse,
+  terminate,
 };
