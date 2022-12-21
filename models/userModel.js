@@ -78,6 +78,17 @@ const userSchema = new mongoose.Schema({
   },
   passwordResetToken: { type: String, select: false },
   passwordResetExpires: { type: Date, select: false },
+  active: { type: Boolean, default: true, select: false },
+});
+//////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Query middleware
+ * regex /^param/ : any expression starting with param
+ */
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
 });
 //////////////////////////////////////////////////////////////////////////////////////
 

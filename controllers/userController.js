@@ -94,3 +94,18 @@ exports.deleteUser = function (req, res, next) {
     })
     .end();
 };
+
+exports.deleteCurrentUser = asyncHandler(async function (req, res, next) {
+  await User.findByIdAndUpdate(req.user.id, {
+    status: "inactive",
+    active: false,
+  });
+
+  res
+    .status(204)
+    .json({
+      status: "success",
+      data: null,
+    })
+    .end();
+});

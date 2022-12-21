@@ -155,6 +155,7 @@ tourSchema.post("save", function (doc, next) {
   next();
 });
 
+// regex /^param/ : any expression starting with param
 tourSchema.pre(/^find/, function (next) {
   this.find({ vip: { $ne: true } });
   this.start = Date.now();

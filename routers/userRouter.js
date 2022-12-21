@@ -21,11 +21,6 @@ router.patch(
   authController.authenticate,
   authController.updatePassword
 );
-router.patch(
-  "/updateCurrentUser",
-  authController.authenticate,
-  userController.updateCurrentUser
-);
 
 /**
  * general purpose middleware
@@ -42,6 +37,11 @@ router
     authController.authorization("admin"),
     userController.createUser
   );
+
+router
+  .route("/currentUser")
+  .patch(authController.authenticate, userController.updateCurrentUser)
+  .delete(authController.authenticate, userController.deleteCurrentUser);
 
 router
   .route("/:id")
