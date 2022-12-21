@@ -191,11 +191,22 @@ const jwtTokenGenerator = function (userId) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 const setupResponse = function (_user, _statusCode, _res) {
+  const _token = jwtTokenGenerator(_user._id);
+  const _options = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  if (process.env.NODE_ENV === "production") _options.secure = true;
+
+  _res.cookie("jwt", _token, _options);
+
   return _res
     .status(_statusCode)
     .json({
       status: "success",
-      token: jwtTokenGenerator(_user._id),
       data: {
         name: _user.name,
         email: _user.email,
