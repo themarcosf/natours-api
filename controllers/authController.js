@@ -90,13 +90,13 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
  * 2. middleware gets access to wrapper function parameters due to closure
  */
 exports.authorization = (...roles) => {
-  return asyncHandler((req, res, next) => {
+  return (req, res, next) => {
     if (!roles.includes(req.user.role))
       return next(new CustomError("Authorization failed", 403));
-    next();
-  });
-};
 
+    next();
+  };
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

@@ -118,6 +118,15 @@ const terminate = function (err, server) {
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+const filterData = function (data, ...filters) {
+  const _filteredData = {};
+  Object.keys(data).forEach((el) => {
+    if (filters.includes(el)) _filteredData[el] = data[el];
+  });
+  return _filteredData;
+};
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * wrapper function to catch errors in async functions
  *
@@ -201,6 +210,7 @@ module.exports = {
   CustomError,
   asyncHandler,
   emailHandler,
+  filterData,
   jwtTokenGenerator,
   setupResponse,
   terminate,

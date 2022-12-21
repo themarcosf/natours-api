@@ -1,4 +1,4 @@
-const { asyncHandler } = require("../utils/lib");
+const { CustomError, asyncHandler, filterData } = require("../utils/lib");
 const User = require("./../models/userModel");
 
 // ROUTE HANDLERS
@@ -52,6 +52,36 @@ exports.updateUser = function (req, res, next) {
     })
     .end();
 };
+
+exports.updateCurrentUser = asyncHandler(async function (req, res, next) {
+  // create error if attempt to update password
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(new CustomError("Attempted to update password", 400));
+  }
+
+  // filter user-provided data fields
+  const _filteredData = filterData(req.body, "name", "email");
+
+  // update user document
+  const _updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    _filteredData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res
+    .status(200)
+    .json({
+      status: "success",
+      data: {
+        user: _updatedUser,
+      },
+    })
+    .end();
+});
 
 exports.deleteUser = function (req, res, next) {
   res
