@@ -7,7 +7,6 @@
  *
  * that is not true when UPDATING a document ie PATCH request
  */
-
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 
@@ -44,7 +43,7 @@ const tourSchema = new mongoose.Schema(
     description: {
       type: String,
       required: [true, "description is required"],
-      maxlength: [500, "lengthmax is 500 digits"],
+      maxlength: [5000, "lengthmax is 5000 digits"],
       minlength: [25, "lengthmin is 25 digits"],
       trim: true,
     },
@@ -79,7 +78,7 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, "maxGroupSize is required"],
       min: [1, "maxGroupSize must be above 1"],
-      max: [20, "maxGroupSize must be below 20"],
+      max: [40, "maxGroupSize must be below 40"],
     },
     ratingsAverage: {
       type: Number,
@@ -105,14 +104,41 @@ const tourSchema = new mongoose.Schema(
       type: [Date],
       required: [true, "startDates is required"],
     },
+    /**
+     * mongoDB supports geospatial data coords
+     * standard: GeoJSON [long, lat]
+     */
+    startLocation: {
+      type: {
+        type: String,
+        default: "Point",
+        enum: ["Point"],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: "Point",
+          enum: ["Point"],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    vip: {
+      type: Boolean,
+      default: false,
+    },
     createdAt: {
       type: Date,
       default: Date.now(),
       select: false, //used to permanently hide sensitive data from clients
-    },
-    vip: {
-      type: Boolean,
-      default: false,
     },
   },
   {
