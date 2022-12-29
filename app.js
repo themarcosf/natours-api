@@ -13,6 +13,9 @@ const app = express();
 
 /**
  * general purpose global middleware
+ *
+ * TODO : data sanitization against XSS eg xss or xss-clean
+ * TODO : prevent http parameter pollution eg hpp
  */
 
 // parse request body
@@ -23,8 +26,6 @@ app.use(helmet());
 
 // data sanitization against NoSQL query injection
 app.use(mongoSanitize());
-
-// TODO : data sanitization against XSS (npm xss or xss-clean)
 
 // serve static files
 app.use(express.static(`${__dirname}/public`));
