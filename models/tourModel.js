@@ -9,7 +9,6 @@
  */
 const mongoose = require("mongoose");
 const slugify = require("slugify");
-const User = require("./userModel");
 
 // mongoose format: BSON
 const tourSchema = new mongoose.Schema(
@@ -132,7 +131,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
     vip: {
       type: Boolean,
       default: false,
@@ -178,20 +177,33 @@ tourSchema.pre("save", function (next) {
   next();
 });
 
-// @dev embed guides into Tour document
-tourSchema.pre("save", async function (next) {
-  // loop through guides array and get user documents
-  const _guidesPromises = this.guides.map(
-    async (el) => await User.findById(el)
-  );
-  // overwrite guides array with user documents
-  this.guides = await Promise.all(_guidesPromises);
-
-  next();
-});
+/**
+ * @dev example : embed guides into Tour document
+ *
+ * in tourSchema >> guides: Array
+ *
+ * tourSchema.pre("save", async function (next) {
+ * // loop through guides array and get user documents
+ * const _guidesPromises = this.guides.map(async (el) => await User.findById(el));
+ * // overwrite guides array with user documents
+ * this.guides = await Promise.all(_guidesPromises);
+ * next();
+ * });
+ */
 
 tourSchema.post("save", function (doc, next) {
   console.log(`Document middleware clock: ${Date.now() - this.start} ms`);
+  next();
+});
+
+/**
+ * @dev populate and select guide reference in Tour document
+ */
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "guides",
+    select: "-__v +role",
+  });
   next();
 });
 
