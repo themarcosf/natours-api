@@ -9,6 +9,7 @@
  */
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const User = require("./userModel");
 
 // mongoose format: BSON
 const tourSchema = new mongoose.Schema(
@@ -131,6 +132,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
     vip: {
       type: Boolean,
       default: false,
@@ -173,6 +175,18 @@ tourSchema.virtual("durationWeeks").get(function () {
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   this.start = Date.now();
+  next();
+});
+
+// @dev embed guides into Tour document
+tourSchema.pre("save", async function (next) {
+  // loop through guides array and get user documents
+  const _guidesPromises = this.guides.map(
+    async (el) => await User.findById(el)
+  );
+  // overwrite guides array with user documents
+  this.guides = await Promise.all(_guidesPromises);
+
   next();
 });
 
