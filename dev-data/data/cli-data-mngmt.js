@@ -1,21 +1,21 @@
 /**
  * command line script for importing and deleting collections of data
  */
-
 require("dotenv").config({ path: `${__dirname}/../../config.env` });
+
 const fs = require("fs");
 const mongoose = require("mongoose");
 const Tour = require("./../../models/tourModel");
 ////////////////////////////////////////////////////////////////////////////////
 
 // remote database
-// const DB = process.env.DATABASE.replace(
-//   "<PASSWORD>",
-//   process.env.DATABASE_PASSWORD
-// );
+const DB = process.env.DATABASE_REMOTE.replace(
+  "<PASSWORD>",
+  process.env.DATABASE_PASSWORD
+);
 
 // local database
-const DB = process.env.DATABASE_LOCAL;
+// const DB = process.env.DATABASE_LOCAL;
 
 mongoose
   .connect(DB)
@@ -23,9 +23,7 @@ mongoose
 ////////////////////////////////////////////////////////////////////////////////
 
 // data management
-const data = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, "utf-8")
-);
+const data = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, "utf-8"));
 
 const _import = async () => {
   try {
@@ -47,10 +45,12 @@ const _delete = async () => {
   process.exit();
 };
 
+// @dev command: node cli-data-mngmt.js --import
 if (process.argv.includes("--import")) {
   _import();
 }
 
+// @dev command: node cli-data-mngmt.js --delete
 if (process.argv.includes("--delete")) {
   _delete();
 }
