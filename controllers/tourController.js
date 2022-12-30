@@ -34,7 +34,7 @@ exports.getAllTours = asyncHandler(async function (req, res, next) {
 });
 
 exports.getTour = asyncHandler(async function (req, res, next) {
-  const _tour = await Tour.findById(req.params.id);
+  const _tour = await Tour.findById(req.params.id).populate("reviews");
 
   if (!_tour) return next(new CustomError("ID not found", 404));
 

@@ -15,71 +15,77 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 
 // mongoose format: BSON
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "name is required"],
-    minlength: [5, "lengthmin is 5 digits"],
-    maxlength: [40, "lengthmax is 40 digits"],
-    trim: true,
-  },
-  email: {
-    type: String,
-    required: [true, "email is required"],
-    minlength: [10, "lengthmin is 10 digits"],
-    maxlength: [30, "lengthmax is 30 digits"],
-    trim: true,
-    lowercase: true,
-    unique: true,
-    validate: [validator.isEmail, "email is invalid"],
-  },
-  photo: {
-    type: String,
-    select: false, //used to permanently hide sensitive data from clients
-  },
-  status: {
-    type: String,
-    default: "active",
-    enum: {
-      values: ["active", "inactive"],
-      message: "Invalid status",
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "name is required"],
+      minlength: [5, "lengthmin is 5 digits"],
+      maxlength: [40, "lengthmax is 40 digits"],
+      trim: true,
     },
-    select: false,
-  },
-  role: {
-    type: String,
-    default: "user",
-    enum: {
-      values: ["user", "guide", "lead-guide", "admin"],
-      message: "Invalid user role",
+    email: {
+      type: String,
+      required: [true, "email is required"],
+      minlength: [10, "lengthmin is 10 digits"],
+      maxlength: [30, "lengthmax is 30 digits"],
+      trim: true,
+      lowercase: true,
+      unique: true,
+      validate: [validator.isEmail, "email is invalid"],
     },
-    select: false,
-  },
-  password: {
-    type: String,
-    required: [true, "password is required"],
-    minlength: [8, "lengthmin is 8 digits"],
-    select: false,
-  },
-  passwordConfirm: {
-    type: String,
-    required: [true, "passwordConfirm is required"],
-    validate: {
-      validator: function (val) {
-        return val === this.password;
+    photo: {
+      type: String,
+      select: false, //used to permanently hide sensitive data from clients
+    },
+    status: {
+      type: String,
+      default: "active",
+      enum: {
+        values: ["active", "inactive"],
+        message: "Invalid status",
       },
-      message: "Invalid password",
+      select: false,
     },
-    select: false,
+    role: {
+      type: String,
+      default: "user",
+      enum: {
+        values: ["user", "guide", "lead-guide", "admin"],
+        message: "Invalid user role",
+      },
+      select: false,
+    },
+    password: {
+      type: String,
+      required: [true, "password is required"],
+      minlength: [8, "lengthmin is 8 digits"],
+      select: false,
+    },
+    passwordConfirm: {
+      type: String,
+      required: [true, "passwordConfirm is required"],
+      validate: {
+        validator: function (val) {
+          return val === this.password;
+        },
+        message: "Invalid password",
+      },
+      select: false,
+    },
+    passwordTimestamp: {
+      type: Date,
+      select: false,
+    },
+    passwordResetToken: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
+    active: { type: Boolean, default: true, select: false },
   },
-  passwordTimestamp: {
-    type: Date,
-    select: false,
-  },
-  passwordResetToken: { type: String, select: false },
-  passwordResetExpires: { type: Date, select: false },
-  active: { type: Boolean, default: true, select: false },
-});
+  {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  }
+);
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**

@@ -3,10 +3,12 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const rateLimit = require("express-rate-limit");
 const morgan = require("morgan");
+
 const { CustomError } = require("./utils/lib");
-const errController = require("./controllers/errController");
 const userRouter = require("./routers/userRouter");
 const tourRouter = require("./routers/tourRouter");
+const reviewRouter = require("./routers/reviewRouter");
+const errController = require("./controllers/errController");
 ////////////////////////////////////////////////////////////////////////
 
 const app = express();
@@ -54,6 +56,8 @@ app.use(
  */
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/reviews", reviewRouter);
+
 app.all("/*", (req, res, next) =>
   next(new CustomError(`Invalid path: ${req.originalUrl}`, 404))
 );

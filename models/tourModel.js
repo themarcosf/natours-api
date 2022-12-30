@@ -154,11 +154,18 @@ const tourSchema = new mongoose.Schema(
  * enables separation between business logic and application logic
  * derivative fields not to be persisted in the database
  * eg conversion from mph to kph or days to weeks
+ * eg virtual populate not to be persisted
  *
  * cannot be manipulated in queries eg Tour.find( $where: { durationWeeks: 1 })
  */
 tourSchema.virtual("durationWeeks").get(function () {
   return Math.ceil(this.duration / 7);
+});
+
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "tour",
+  localField: "_id",
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
