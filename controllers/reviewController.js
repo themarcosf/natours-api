@@ -2,11 +2,12 @@ const { asyncHandler } = require("../utils/lib");
 const Review = require("./../models/reviewModel");
 ////////////////////////////////////////////////////////
 
-/**
- * ROUTE HANDLERS
- */
+// ROUTE HANDLERS
 exports.getAllReviews = asyncHandler(async function (req, res, next) {
-  const _reviews = await Review.find();
+  let _filter = {};
+  if (req.params.tourId) _filter = { tour: req.params.tourId };
+
+  const _reviews = await Review.find(_filter);
 
   res
     .status(200)
@@ -18,7 +19,10 @@ exports.getAllReviews = asyncHandler(async function (req, res, next) {
     .end();
 });
 
-exports.createNewReview = asyncHandler(async function (req, res, next) {
+exports.createReview = asyncHandler(async function (req, res, next) {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
+
   const _review = await Review.create(req.body);
 
   res
