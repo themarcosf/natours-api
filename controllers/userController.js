@@ -8,6 +8,11 @@ const {
 const { CustomError, asyncHandler, filterData } = require("../utils/lib");
 
 // @notice route handlers
+exports.readCurrentUser = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
+};
+
 exports.updateCurrentUser = asyncHandler(async function (req, res, next) {
   // create error if attempt to update password
   if (req.body.password || req.body.passwordConfirm) {

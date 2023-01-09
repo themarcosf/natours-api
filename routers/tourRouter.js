@@ -14,11 +14,11 @@ const router = express.Router();
 router.use("/:tourId/reviews", reviewRouter);
 
 // @notice aliasing a frequently requested route
-router.route("/top5").get(tourController.aliasTop5, tourController.getAllTours);
+router.get("/top5", tourController.aliasTop5, tourController.getAllTours);
 
 // @notice aggregation pipelines
-router.route("/stats").get(tourController.getStats);
-router.route("/schedule/:year").get(tourController.getSchedule);
+router.get("/stats", tourController.getStats);
+router.get("/schedule/:year", tourController.getSchedule);
 
 // @notice routes middleware
 router

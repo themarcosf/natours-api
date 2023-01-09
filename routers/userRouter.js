@@ -39,6 +39,13 @@ router
   .patch(authController.authenticate, userController.updateCurrentUser)
   .delete(authController.authenticate, userController.deleteCurrentUser);
 
+router.get(
+  "/me",
+  authController.authenticate,
+  userController.readCurrentUser,
+  userController.getUser
+);
+
 router
   .route("/:id")
   .get(
