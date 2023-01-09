@@ -9,59 +9,33 @@ const router = express.Router();
  * router.param("name", [callback function (req, res, next, val)] );
  */
 
-// @notice data management middleware
+// @notice routes middleware
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
-router.patch(
-  "/updatePassword",
-  authController.authenticate,
-  authController.updatePassword
-);
 
-// @notice routes middleware
-router
-  .route("/")
-  .get(
-    authController.authenticate,
-    authController.authorization("admin"),
-    userController.getAllUsers
-  )
-  .post(
-    authController.authenticate,
-    authController.authorization("admin"),
-    userController.createUser
-  );
+// @notice authentication required for all routes after this middleware
+router.use(authController.authenticate);
+
+router.patch("/updatePassword", authController.updatePassword);
 
 router
   .route("/currentUser")
-  .patch(authController.authenticate, userController.updateCurrentUser)
-  .delete(authController.authenticate, userController.deleteCurrentUser);
+  .patch(userController.updateCurrentUser)
+  .delete(userController.deleteCurrentUser);
 
-router.get(
-  "/me",
-  authController.authenticate,
-  userController.readCurrentUser,
-  userController.getUser
-);
+router.get("/me", userController.readCurrentUser, userController.getUser);
+
+// @notice authorization required for all routes after this middleware
+router.use(authController.authorization("admin"));
+
+router.get("/", userController.getAllUsers);
 
 router
   .route("/:id")
-  .get(
-    authController.authenticate,
-    authController.authorization("admin"),
-    userController.getUser
-  )
-  .patch(
-    authController.authenticate,
-    authController.authorization("admin"),
-    userController.updateUser
-  )
-  .delete(
-    authController.authenticate,
-    authController.authorization("admin"),
-    userController.deleteUser
-  );
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 module.exports = router;

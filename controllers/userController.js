@@ -58,16 +58,6 @@ exports.deleteCurrentUser = asyncHandler(async function (req, res, next) {
     .end();
 });
 
-exports.createUser = (req, res) => {
-  res
-    .status(500)
-    .json({
-      status: "error",
-      message: "route not defined. use /signup instead",
-    })
-    .end();
-};
-
 exports.getUser = readOne(User);
 exports.getAllUsers = readAll(User);
 exports.updateUser = updateOne(User);

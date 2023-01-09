@@ -1,7 +1,7 @@
 const express = require("express");
 const reviewRouter = require("./reviewRouter");
-const authController = require("./../controllers/authController");
 const tourController = require("./../controllers/tourController");
+const authController = require("./../controllers/authController");
 
 const router = express.Router();
 
@@ -18,7 +18,12 @@ router.get("/top5", tourController.aliasTop5, tourController.getAllTours);
 
 // @notice aggregation pipelines
 router.get("/stats", tourController.getStats);
-router.get("/schedule/:year", tourController.getSchedule);
+router.get(
+  "/schedule/:year",
+  authController.authenticate,
+  authController.authorization("admin", "lead-guide", "guide"),
+  tourController.getSchedule
+);
 
 // @notice routes middleware
 router
