@@ -1,5 +1,12 @@
-const { QueryHelpers, CustomError, asyncHandler } = require("../utils/lib");
+const {
+  createOne,
+  readOne,
+  readAll,
+  updateOne,
+  deleteOne,
+} = require("./../utils/factoryHandlers");
 const Tour = require("./../models/tourModel");
+const { CustomError, asyncHandler } = require("../utils/lib");
 ////////////////////////////////////////////////////////
 
 /**
@@ -15,79 +22,11 @@ exports.aliasTop5 = function (req, res, next) {
 /**
  * ROUTE HANDLERS
  */
-exports.getAllTours = asyncHandler(async function (req, res, next) {
-  const query = new QueryHelpers(req.query, Tour.find())
-    .filter()
-    .sort()
-    .fields()
-    .paginate();
-  const _tours = await query.mongooseQuery;
-
-  res
-    .status(200)
-    .json({
-      status: "success",
-      results: _tours.length,
-      data: { _tours },
-    })
-    .end();
-});
-
-exports.getTour = asyncHandler(async function (req, res, next) {
-  const _tour = await Tour.findById(req.params.id).populate("reviews");
-
-  if (!_tour) return next(new CustomError("ID not found", 404));
-
-  res
-    .status(200)
-    .json({
-      status: "success",
-      data: { _tour },
-    })
-    .end();
-});
-
-exports.createNewTour = asyncHandler(async function (req, res, next) {
-  const _tour = await Tour.create(req.body);
-  res
-    .status(201)
-    .json({
-      status: "Success",
-      data: { tour: _tour },
-    })
-    .end();
-});
-
-exports.updateTour = asyncHandler(async function (req, res, next) {
-  const _tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!_tour) return next(new CustomError("ID not found", 404));
-
-  res
-    .status(200)
-    .json({
-      status: "sucess",
-      data: { _tour },
-    })
-    .end();
-});
-
-exports.deleteTour = asyncHandler(async function (req, res, next) {
-  const _tour = await Tour.findByIdAndDelete(req.params.id);
-
-  if (!_tour) return next(new CustomError("ID not found", 404));
-
-  res
-    .status(200)
-    .json({
-      status: "sucess",
-      data: null,
-    })
-    .end();
-});
+exports.createNewTour = createOne(Tour);
+exports.getTour = readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
+exports.getAllTours = readAll(Tour);
+exports.updateTour = updateOne(Tour);
+exports.deleteTour = deleteOne(Tour);
 ////////////////////////////////////////////////////////
 
 /**

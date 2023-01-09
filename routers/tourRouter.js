@@ -20,7 +20,7 @@ router.route("/top5").get(tourController.aliasTop5, tourController.getAllTours);
 router.route("/stats").get(tourController.getStats);
 router.route("/schedule/:year").get(tourController.getSchedule);
 
-// routes middleware
+// @notice routes middleware
 router
   .route("/")
   .get(tourController.getAllTours)

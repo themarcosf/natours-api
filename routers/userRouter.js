@@ -5,13 +5,11 @@ const userController = require("./../controllers/userController");
 const router = express.Router();
 
 /**
- * EXAMPLE: param middleware
+ * @example param middleware
  * router.param("name", [callback function (req, res, next, val)] );
  */
 
-/**
- * data management middleware
- */
+// @notice data management middleware
 router.post("/signup", authController.signup);
 router.post("/login", authController.login);
 router.post("/forgotPassword", authController.forgotPassword);
@@ -22,9 +20,7 @@ router.patch(
   authController.updatePassword
 );
 
-/**
- * general purpose middleware
- */
+// @notice routes middleware
 router
   .route("/")
   .get(
