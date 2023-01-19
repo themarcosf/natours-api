@@ -9,9 +9,7 @@ const Tour = require("./../models/tourModel");
 const { CustomError, asyncHandler } = require("../utils/lib");
 ////////////////////////////////////////////////////////
 
-/**
- * ALIAS MIDDLEWARE: provides a route for specific queries
- */
+/** ALIAS MIDDLEWARE: provides a route for specific queries */
 exports.aliasTop5 = function (req, res, next) {
   req.query.sort = "-ratingsAverage,price,-maxGroupSize";
   req.query.limit = 5;
@@ -19,9 +17,7 @@ exports.aliasTop5 = function (req, res, next) {
 };
 ////////////////////////////////////////////////////////
 
-/**
- * ROUTE HANDLERS
- */
+/** ROUTE HANDLERS */
 exports.createNewTour = createOne(Tour);
 exports.getTour = readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
 exports.getAllTours = readAll(Tour);

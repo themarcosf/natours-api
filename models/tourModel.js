@@ -149,6 +149,12 @@ const tourSchema = new mongoose.Schema(
 );
 //////////////////////////////////////////////////////////////////////////////////////
 
+/* Indexes : allow for more efficient data queries */
+
+tourSchema.index({ slug: 1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+//////////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Virtual Properties:
  * enables separation between business logic and application logic
@@ -203,9 +209,7 @@ tourSchema.post("save", function (doc, next) {
   next();
 });
 
-/**
- * @dev populate and select guide reference in Tour document
- */
+/* @dev populate and select guide reference in Tour document */
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: "guides",

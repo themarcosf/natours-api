@@ -6,6 +6,8 @@ require("dotenv").config({ path: `${__dirname}/../../config.env` });
 const fs = require("fs");
 const mongoose = require("mongoose");
 const Tour = require("./../../models/tourModel");
+const User = require("./../../models/userModel");
+const Review = require("./../../models/reviewModel");
 ////////////////////////////////////////////////////////////////////////////////
 
 // remote database
@@ -23,11 +25,19 @@ mongoose
 ////////////////////////////////////////////////////////////////////////////////
 
 // data management
-const data = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, "utf-8"));
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, "utf-8"));
+const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, "utf-8"));
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, "utf-8")
+);
 
 const _import = async () => {
   try {
-    await Tour.create(data);
+    await Tour.create(tours);
+    // @dev comment out password encryption middleware in user Model
+    // @dev sample user data already has encrypted passwords
+    await User.create(users, { validateBeforeSave: false });
+    await Review.create(reviews);
     console.log("Data successfully loaded");
   } catch (err) {
     console.log(err);
@@ -38,6 +48,8 @@ const _import = async () => {
 const _delete = async () => {
   try {
     await Tour.deleteMany();
+    await User.deleteMany();
+    await Review.deleteMany();
     console.log("Data successfully deleted");
   } catch (err) {
     console.log(err);

@@ -32,7 +32,7 @@ const readOne = (Model, populateOptions) =>
 
 const readAll = (Model) =>
   asyncHandler(async function (req, res, next) {
-    // allow nested route
+    // hack to allow nested route
     let _filter = {};
     if (req.params.tourId) _filter = { tour: req.params.tourId };
 
