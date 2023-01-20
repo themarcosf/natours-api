@@ -51,7 +51,12 @@ const reviewSchema = new mongoose.Schema(
 /**
  * Static methods: available directly in the Model
  *
- * calcAverageRatings: update Tour average rating whenever a Review is handled
+ * calcAverageRatings: calculate Tour average rating whenever a Review is handled
+ *        . on create: document post-hook middleware
+ *        . on update: query pre-hook middleware
+ *        . on delete: query pre-hook middleware
+ *            ** pre-hook : query can only be accessed before execution
+ *            ** post-hook : call calcAverageRatings from object saved as property
  */
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
   const stats = await this.aggregate([
@@ -67,18 +72,30 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
     },
   ]);
 
-  console.log(stats);
+  const [_qty, _avg] = stats.length
+    ? [stats[0].numRatings, stats[0].avgRating]
+    : [0, 4.5];
 
   await Tour.findByIdAndUpdate(tourId, {
-    ratingsQuantity: stats[0].numRatings,
-    ratingsAverage: stats[0].avgRating,
+    ratingsQuantity: _qty,
+    ratingsAverage: _avg,
   });
 };
 
-// @notice call static method before new review is stored in database
 // @dev this.constructor : enable using Review model before declaring it
 reviewSchema.post("save", function () {
   this.constructor.calcAverageRatings(this.tour);
+});
+
+// @dev <findByIdAnd...> in mongoose : alias <findOneAnd...> in mongoDB
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  // @dev inject object into query as property
+  this._review = await this.clone().findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  await this._review.constructor.calcAverageRatings(this._review.tour);
 });
 //////////////////////////////////////////////////////////////////////////////////////
 
