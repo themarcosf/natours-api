@@ -25,6 +25,14 @@ router.get(
   tourController.getSchedule
 );
 
+// @notice geolocation queries
+router.get(
+  "/geolocation/:distance/center/:latlng/unit/:unit",
+  tourController.geolocation
+);
+
+router.get("/distances/:latlng/unit/:unit", tourController.distances);
+
 // @notice routes middleware
 router
   .route("/")

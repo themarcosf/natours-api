@@ -152,10 +152,16 @@ const tourSchema = new mongoose.Schema(
 );
 //////////////////////////////////////////////////////////////////////////////////////
 
-/* Indexes : allow for more efficient data queries */
+/** Indexes : allow for more efficient data queries - types : simple, compound
+ *
+ * @dev geospatial queries on geospatial data fields
+ *      <"2d"> : fictional points on simple 2-dimension plane
+ *      <"2dsphere"> : describes points in earth-like sphere
+ */
 
 tourSchema.index({ slug: 1 });
 tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ startLocation: "2dsphere" });
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -233,10 +239,14 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-tourSchema.pre("aggregate", function (next) {
-  this._pipeline.unshift({ $match: { vip: { $ne: true } } });
-  next();
-});
+/**
+ * @dev example : pre-hook on aggregation pipeline
+ *
+ * tourSchema.pre("aggregate", function (next) {
+ *   this._pipeline.unshift({ $match: { vip: { $ne: true } } });
+ *   next();
+ * });
+ */
 
 const Tour = new mongoose.model("Tour", tourSchema);
 

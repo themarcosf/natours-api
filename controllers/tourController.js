@@ -17,12 +17,67 @@ exports.aliasTop5 = function (req, res, next) {
 };
 ////////////////////////////////////////////////////////
 
-/** ROUTE HANDLERS */
-exports.createNewTour = createOne(Tour);
-exports.getTour = readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
-exports.getAllTours = readAll(Tour);
-exports.updateTour = updateOne(Tour);
-exports.deleteTour = deleteOne(Tour);
+/** GEOLOCATION QUERIES */
+
+exports.geolocation = asyncHandler(async function (req, res, next) {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(",");
+
+  const [earthRadiusMi, earthRadiusKm] = [3963.2, 6378.1];
+  const radius =
+    unit === "mi" ? distance / earthRadiusMi : distance / earthRadiusKm;
+
+  if (!lat || !lng)
+    return next(new CustomError("coordinates are required", 400));
+
+  const _tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res
+    .status(200)
+    .json({
+      status: "success",
+      results: _tours.length,
+      data: { data: _tours },
+    })
+    .end();
+});
+
+exports.distances = asyncHandler(async function (req, res, next) {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(",");
+
+  const _multiplier = unit === "mi" ? 0.000621371 : 0.001;
+
+  if (!lat || !lng)
+    return next(new CustomError("coordinates are required", 400));
+
+  const _distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: { type: "Point", coordinates: [Number(lng), Number(lat)] },
+        distanceField: "distance",
+        distanceMultiplier: _multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res
+    .status(200)
+    .json({
+      status: "success",
+      data: { data: _distances },
+    })
+    .end();
+});
+
 ////////////////////////////////////////////////////////
 
 /**
@@ -109,3 +164,11 @@ exports.getSchedule = asyncHandler(async function (req, res, next) {
     })
     .end();
 });
+////////////////////////////////////////////////////////
+
+/** GENERAL PURPOSE ROUTE HANDLERS */
+exports.createNewTour = createOne(Tour);
+exports.getTour = readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
+exports.getAllTours = readAll(Tour);
+exports.updateTour = updateOne(Tour);
+exports.deleteTour = deleteOne(Tour);
