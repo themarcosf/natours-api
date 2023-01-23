@@ -108,9 +108,7 @@ class CustomError extends Error {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * handles uncaught (sync) exceptions and (async) rejections
- */
+/** handles uncaught (sync) exceptions and (async) rejections */
 const terminate = function (err, server) {
   console.log(err.name, err.message);
   if (server) server.close();

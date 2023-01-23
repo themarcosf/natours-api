@@ -4,15 +4,11 @@ const mongoose = require("mongoose");
 const { terminate } = require("./utils/lib");
 //////////////////////////////////////////////////////////////////
 
-/**
- * unhandled (sync) exceptions handler
- */
+/** unhandled (sync) exceptions handler */
 process.on("uncaughtException", (err) => terminate(err));
 //////////////////////////////////////////////////////////////////
 
-/**
- * database config
- */
+/** database config */
 
 // remote database
 const DB = process.env.DATABASE_REMOTE.replace(
@@ -28,9 +24,7 @@ mongoose
   .then((conn) => console.log(`DB connected to: ${conn.connections[0].name}`));
 //////////////////////////////////////////////////////////////////
 
-/**
- * server config
- */
+/** server config */
 
 const server = app.listen(
   process.env.PORT || 8000,
@@ -39,7 +33,5 @@ const server = app.listen(
 );
 //////////////////////////////////////////////////////////////////
 
-/**
- * unhandled (async) rejections handler
- */
+/** unhandled (async) rejections handler */
 process.on("unhandledRejection", (err) => terminate(err, server));

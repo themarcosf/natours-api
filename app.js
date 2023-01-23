@@ -45,15 +45,7 @@ app.use(
   })
 );
 
-// boilerplate example
-// app.use((req, res, next) => {
-//   console.log(req.body);
-//   next();
-// });
-
-/**
- * routers middleware
- */
+/** routers middleware */
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
@@ -62,9 +54,7 @@ app.all("/*", (req, res, next) =>
   next(new CustomError(`Invalid path: ${req.originalUrl}`, 404))
 );
 
-/**
- * global error handling middleware
- */
+/** global error handling middleware */
 app.use(errController);
 
 module.exports = app;
