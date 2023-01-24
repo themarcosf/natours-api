@@ -222,7 +222,7 @@ tourSchema.post("save", function (doc, next) {
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: "guides",
-    select: "-__v +role",
+    select: "-__v +role +photo",
   });
   next();
 });
