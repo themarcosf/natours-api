@@ -118,7 +118,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password") || this.isNew()) return next();
+  if (!this.isModified("password") || this.isNew) return next();
 
   // in practice, saving to database can be slower than creating new JWT and
   // may result in changed password's timestamp being set 'after' JWT creation

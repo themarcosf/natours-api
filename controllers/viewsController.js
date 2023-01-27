@@ -1,6 +1,10 @@
 const Tour = require("./../models/tourModel");
 const { asyncHandler } = require("./../utils/lib");
 
+exports.login = function (req, res) {
+  res.status(200).render("login", { title: "Log in" });
+};
+
 exports.overview = asyncHandler(async function (req, res, next) {
   const tours = await Tour.find();
 

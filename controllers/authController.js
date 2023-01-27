@@ -58,11 +58,14 @@ exports.login = asyncHandler(async function (req, res, next) {
  */
 exports.authenticate = asyncHandler(async function (req, res, next) {
   const _error = new CustomError("Authentication failed", 401);
-  // check headers for authorization token
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer")) return next(_error);
 
-  const token = authHeader.split(" ")[1];
+  // check request for authorization token
+  if (!req.cookies.jwt && !req.headers.authorization.startsWith("Bearer"))
+    return next(_error);
+
+  const token = req.cookies.jwt
+    ? req.cookies.jwt
+    : req.headers.authorization.split(" ")[1];
 
   // validate token integrity
   const _payload = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
