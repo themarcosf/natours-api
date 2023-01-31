@@ -17,7 +17,7 @@ const devError = (err, res) =>
     .end();
 
 const prodError = (err, res) => {
-  // operational errors from mongoDB and mongoose
+  /** operational errors from mongoDB and mongoose */
   if (
     err.name === "CastError" ||
     err.name === "ValidationError" ||

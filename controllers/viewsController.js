@@ -1,5 +1,6 @@
 const Tour = require("./../models/tourModel");
 const { asyncHandler } = require("./../utils/lib");
+////////////////////////////////////////////////////////////////////////
 
 exports.login = function (req, res) {
   res.status(200).render("login", { title: "Log in" });

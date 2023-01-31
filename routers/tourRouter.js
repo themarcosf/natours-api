@@ -1,22 +1,18 @@
 const express = require("express");
+
 const reviewRouter = require("./reviewRouter");
-const tourController = require("./../controllers/tourController");
 const authController = require("./../controllers/authController");
+const tourController = require("./../controllers/tourController");
 
 const router = express.Router();
 
-/**
- * @example param middleware
- * router.param("name", [callback function (req, res, next, val)] );
- */
-
-// @notice mount-nested-routes middleware
+/** mount-nested-routes middleware */
 router.use("/:tourId/reviews", reviewRouter);
 
-// @notice aliasing a frequently requested route
+/** aliasing a frequently requested route */ 
 router.get("/top5", tourController.aliasTop5, tourController.getAllTours);
 
-// @notice aggregation pipelines
+/** aggregation pipelines */
 router.get("/stats", tourController.getStats);
 router.get(
   "/schedule/:year",
@@ -25,7 +21,7 @@ router.get(
   tourController.getSchedule
 );
 
-// @notice geolocation queries
+/** geolocation queries */
 router.get(
   "/geolocation/:distance/center/:latlng/unit/:unit",
   tourController.geolocation
@@ -33,7 +29,7 @@ router.get(
 
 router.get("/distances/:latlng/unit/:unit", tourController.distances);
 
-// @notice routes middleware
+/** routes middleware */ 
 router
   .route("/")
   .get(tourController.getAllTours)

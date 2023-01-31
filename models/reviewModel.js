@@ -10,7 +10,7 @@
 const mongoose = require("mongoose");
 const Tour = require("./tourModel");
 
-// mongoose format: BSON
+/** mongoose format: BSON */
 const reviewSchema = new mongoose.Schema(
   {
     review: {
@@ -85,14 +85,14 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
   });
 };
 
-// @dev this.constructor : enable using Review model before declaring it
+/** @dev this.constructor : enable using Review model before declaring it */
 reviewSchema.post("save", function () {
   this.constructor.calcAverageRatings(this.tour);
 });
 
-// @dev <findByIdAnd...> in mongoose : alias <findOneAnd...> in mongoDB
+/** @dev <findByIdAnd...> in mongoose : alias <findOneAnd...> in mongoDB */
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  // @dev inject object into query as property
+  /** @dev inject object into query as property */
   this._review = await this.clone().findOne();
   next();
 });

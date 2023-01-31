@@ -1,11 +1,12 @@
 const express = require("express");
+
 const authController = require("./../controllers/authController");
 const reviewController = require("./../controllers/reviewController");
 
-// @dev mergeParms default: false
+/** @dev mergeParms default: false */ 
 const router = express.Router({ mergeParams: true });
 
-// @notice routes middleware
+/** routes middleware */ 
 router
   .route("/")
   .get(reviewController.getAllReviews)

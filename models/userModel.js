@@ -14,7 +14,7 @@ const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-// mongoose format: BSON
+/** mongoose format: BSON */
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -34,10 +34,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validator.isEmail, "email is invalid"],
     },
-    photo: {
-      type: String,
-      select: false, //used to permanently hide sensitive data from clients
-    },
+    photo: { type: String, select: false },
     status: {
       type: String,
       default: "active",
@@ -73,10 +70,7 @@ const userSchema = new mongoose.Schema(
       },
       select: false,
     },
-    passwordTimestamp: {
-      type: Date,
-      select: false,
-    },
+    passwordTimestamp: { type: Date, select: false },
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
     active: { type: Boolean, default: true, select: false },
@@ -120,10 +114,12 @@ userSchema.pre("save", async function (next) {
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || this.isNew) return next();
 
-  // in practice, saving to database can be slower than creating new JWT and
-  // may result in changed password's timestamp being set 'after' JWT creation
-  // making it so the user could not login using the new token
-  // QUICK HACK : subtract 1 second from password timestamp
+  /**
+   * in practice, saving to database can be slower than creating new JWT and
+   * may result in changed password's timestamp being set 'after' JWT creation
+   * making it so the user could not login using the new token
+   * QUICK HACK : subtract 1 second from password timestamp
+   */
   this.passwordTimestamp = Date.now() - 1000;
   next();
 });
@@ -148,19 +144,19 @@ userSchema.methods.validateTokenTimestamp = function (tknTimestamp) {
 };
 
 userSchema.methods.generatorPasswordResetToken = function () {
-  // create simple reset token
+  /** create simple reset token */
   const _resetToken = crypto.randomBytes(32).toString("hex");
 
-  // hash reset token before storage
+  /** hash reset token before storage */
   this.passwordResetToken = crypto
     .createHash("sha256")
     .update(_resetToken)
     .digest("hex");
 
-  // set reset token expiration to 10 minutes
+  /** set reset token expiration to 10 minutes */
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
-  // return plaintext token
+  /** return plaintext token */
   return _resetToken;
 };
 

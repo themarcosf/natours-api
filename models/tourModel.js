@@ -10,7 +10,7 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
 
-// mongoose format: BSON
+/** mongoose format: BSON */
 const tourSchema = new mongoose.Schema(
   {
     name: {
@@ -87,10 +87,7 @@ const tourSchema = new mongoose.Schema(
       max: [5, "Rating must be below or equal to 5.0"],
       set: (val) => Math.round(val * 10) / 10,
     },
-    ratingsQuantity: {
-      type: Number,
-      default: 0,
-    },
+    ratingsQuantity: { type: Number, default: 0 },
     price: {
       type: Number,
       required: [true, "price is required."],
@@ -135,14 +132,11 @@ const tourSchema = new mongoose.Schema(
       },
     ],
     guides: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
-    vip: {
-      type: Boolean,
-      default: false,
-    },
+    vip: { type: Boolean, default: false },
     createdAt: {
       type: Date,
       default: Date.now(),
-      select: false, //used to permanently hide sensitive data from clients
+      select: false
     },
   },
   {
@@ -195,7 +189,6 @@ tourSchema.virtual("reviews", {
  */
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
-  this.start = Date.now();
   next();
 });
 
@@ -213,11 +206,6 @@ tourSchema.pre("save", function (next) {
  * });
  */
 
-tourSchema.post("save", function (doc, next) {
-  console.log(`Document middleware clock: ${Date.now() - this.start} ms`);
-  next();
-});
-
 /* @dev populate and select guide reference in Tour document */
 tourSchema.pre(/^find/, function (next) {
   this.populate({
@@ -227,15 +215,9 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-// regex /^param/ : any expression starting with param
+/** regex /^param/ : any expression starting with param */
 tourSchema.pre(/^find/, function (next) {
   this.find({ vip: { $ne: true } });
-  this.start = Date.now();
-  next();
-});
-
-tourSchema.post(/^find/, function (docs, next) {
-  console.log(`Query middleware clock: ${Date.now() - this.start} ms`);
   next();
 });
 

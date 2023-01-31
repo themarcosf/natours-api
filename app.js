@@ -30,31 +30,25 @@ app.set("views", path.join(__dirname, "views"));
 app.use(cors());
 app.options("*", cors());
 
-// serve static files
+/** serve static files */
 app.use(express.static(path.join(__dirname, "public")));
 
-/** general purpose global middleware */
-
-// parse request body
+/** parse request body */
 app.use(express.json({ limit: "10kb" }));
 
-// parse request cookies
+/** parse request cookies */
 app.use(cookieParser());
-app.use((req, res, next) => {
-  console.log(req.cookies);
-  next();
-});
 
-// set security HTTPS headers
+/** set security HTTPS headers [disabled due to incompatibility with PUG] */
 // app.use(helmet());
 
-// data sanitization against NoSQL query injection
+/** data sanitization against NoSQL query injection */
 app.use(mongoSanitize());
 
-// http requests logger
+/** http requests logger */
 if (process.env.NODE_ENV === "development") app.use(morgan("dev"));
 
-// block DoS attacks by counting number of request from single IP (eg 100 per hour)
+/** block DoS attacks by counting number of request from single IP (eg 100 per hour) */
 app.use(
   "/api",
   rateLimit({
@@ -73,6 +67,7 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
 
+/** global invalid path handler */
 app.all("/*", (req, res, next) =>
   next(new CustomError(`Invalid path: ${req.originalUrl}`, 404))
 );

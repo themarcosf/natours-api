@@ -102,9 +102,7 @@ exports.authorization = (...roles) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Password management middleware
- */
+/** Password management middleware */
 exports.forgotPassword = asyncHandler(async function (req, res, next) {
   // get user based on email
   const _user = await User.findOne({ email: req.body.email });
@@ -162,9 +160,7 @@ exports.resetPassword = asyncHandler(async function (req, res, next) {
   setupResponse(_user, 200, res);
 });
 
-/**
- * @notice security best practice: require and verify current password before update
- */
+/** security best practice: require and verify current password before update */
 exports.updatePassword = asyncHandler(async function (req, res, next) {
   // get user from collection
   const _user = await User.findById(req.user._id).select("+password");

@@ -55,9 +55,7 @@ class QueryHelpers {
   }
 
   fields() {
-    /**
-     * field limiting: allow clients to choose which fields appear in the response
-     */
+    /** field limiting: allow clients to choose which fields appear in the response */
     if (this.expressQuery.fields) {
       const fields = this.expressQuery.fields.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.select(fields);

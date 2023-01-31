@@ -6,23 +6,23 @@ const {
   deleteOne,
 } = require("./../utils/factoryHandlers");
 const { CustomError, asyncHandler, filterData } = require("../utils/lib");
+////////////////////////////////////////////////////////////////////////
 
-// @notice route handlers
 exports.readCurrentUser = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
 
 exports.updateCurrentUser = asyncHandler(async function (req, res, next) {
-  // create error if attempt to update password
+  /** create error if attempt to update password */
   if (req.body.password || req.body.passwordConfirm) {
     return next(new CustomError("Attempted to update password", 400));
   }
 
-  // filter user-provided data fields
+  /** filter user-provided data fields */
   const _filteredData = filterData(req.body, "name", "email");
 
-  // update user document
+  /** update user document */
   const _updatedUser = await User.findByIdAndUpdate(
     req.user.id,
     _filteredData,
@@ -57,6 +57,7 @@ exports.deleteCurrentUser = asyncHandler(async function (req, res, next) {
     })
     .end();
 });
+////////////////////////////////////////////////////////////////////////
 
 exports.getUser = readOne(User);
 exports.getAllUsers = readAll(User);

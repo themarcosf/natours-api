@@ -7,7 +7,7 @@ const {
 } = require("./../utils/factoryHandlers");
 const Tour = require("./../models/tourModel");
 const { CustomError, asyncHandler } = require("../utils/lib");
-////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 /** ALIAS MIDDLEWARE: provides a route for specific queries */
 exports.aliasTop5 = function (req, res, next) {
@@ -15,7 +15,7 @@ exports.aliasTop5 = function (req, res, next) {
   req.query.limit = 5;
   next();
 };
-////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 /** GEOLOCATION QUERIES */
 
@@ -78,7 +78,7 @@ exports.distances = asyncHandler(async function (req, res, next) {
     .end();
 });
 
-////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 /**
  * AGGREGATION PIPELINES: define a pipeline that all documents from a collection go
@@ -164,9 +164,8 @@ exports.getSchedule = asyncHandler(async function (req, res, next) {
     })
     .end();
 });
-////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
-/** GENERAL PURPOSE ROUTE HANDLERS */
 exports.createNewTour = createOne(Tour);
 exports.getTour = readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
 exports.getAllTours = readAll(Tour);
