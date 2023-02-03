@@ -46,33 +46,47 @@ exports.login = asyncHandler(async function (req, res, next) {
 });
 
 /** enable rendering conditional frontend assets */
-exports.checkLogin = asyncHandler(async function (req, res, next) {
-  /** check request for token cookie */
-  if (!req.cookies.jwt) return next();
+exports.checkLogin = async function (req, res, next) {
+  try {
+    /** check request for token cookie */
+    if (!req.cookies.jwt) return next();
 
-  /** validate token integrity */
-  const _payload = await promisify(jwt.verify)(
-    req.cookies.jwt,
-    process.env.JWT_SECRET
-  );
+    /** validate token integrity */
+    const _payload = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
 
-  /** verify user status */
-  const _user = await User.findById(_payload.id)
-    .select("+photo")
-    .select("+status")
-    .select("+passwordTimestamp");
-  if (!_user || _user.status === "inactive") return next();
+    /** verify user status */
+    const _user = await User.findById(_payload.id)
+      .select("+photo")
+      .select("+status")
+      .select("+passwordTimestamp");
+    if (!_user || _user.status === "inactive") return next();
 
-  /** check if current password matches token */
-  if (await _user.validateTokenTimestamp(_payload.iat)) return next();
+    /** check if current password matches token */
+    if (await _user.validateTokenTimestamp(_payload.iat)) return next();
 
-  /**
-   * res.locals : set variables accessible in templates rendered with res.render
-   * variables are available within a single req-res cycle, and will not be shared between requests
-   */
-  res.locals.user = _user;
-  next();
-});
+    /**
+     * res.locals : set variables accessible in templates rendered with res.render
+     * variables are available within a single req-res cycle, and will not be shared between requests
+     */
+    res.locals.user = _user;
+    next();
+  } catch (err) {
+    return next();
+  }
+};
+
+/** logout middleware : empty jwt with minimum expiration time sent to client in place of original jwt */
+exports.logout = function (req, res) {
+  res.cookie("jwt", "", {
+    expires: new Date(Date.now() + 500),
+    httpOnly: true,
+  });
+
+  res.status(200).json({ status: "success" }).end();
+};
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**

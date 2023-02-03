@@ -186,6 +186,7 @@ const jwtTokenGenerator = function (userId) {
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+/** httpOnly : makes impossible to manipulate cookie in browser */
 const setupResponse = function (_user, _statusCode, _res) {
   const _token = jwtTokenGenerator(_user._id);
   const _options = {

@@ -21705,7 +21705,7 @@ exports.hideAlert = hideAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.login = void 0;
+exports.logout = exports.login = void 0;
 var _axios = _interopRequireDefault(require("axios"));
 var _alerts = require("./alerts");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -21755,6 +21755,45 @@ var login = /*#__PURE__*/function () {
   };
 }();
 exports.login = login;
+var logout = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var _res;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+      while (1) switch (_context2.prev = _context2.next) {
+        case 0:
+          _context2.prev = 0;
+          _context2.next = 3;
+          return (0, _axios.default)({
+            method: "GET",
+            url: "http://127.0.0.1:8000/api/v1/users/logout"
+          });
+        case 3:
+          _res = _context2.sent;
+          console.log(_res);
+
+          /**
+           * @dev location.reload(bool)
+           * true : force reload from server
+           * false : reload from cache
+           */
+          if (_res.data.status === "success") location.reload(true);
+          _context2.next = 11;
+          break;
+        case 8:
+          _context2.prev = 8;
+          _context2.t0 = _context2["catch"](0);
+          (0, _alerts.displayAlert)("error", "Error logging out. Retry!");
+        case 11:
+        case "end":
+          return _context2.stop();
+      }
+    }, _callee2, null, [[0, 8]]);
+  }));
+  return function logout() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+exports.logout = logout;
 },{"axios":"../../node_modules/axios/index.js","./alerts":"alerts.js"}],"mapbox.js":[function(require,module,exports) {
 "use strict";
 
@@ -21819,10 +21858,10 @@ var _mapbox = require("./mapbox");
 /** DOM elements */
 var _map = document.getElementById("map");
 var _login = document.querySelector(".form");
+var _logout = document.querySelector(".nav__el-logout");
 ///////////////////////////////////////////////////////////////
 
 /** delegations */
-
 if (_login) {
   _login.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -21831,6 +21870,7 @@ if (_login) {
     (0, _login2.login)(_email, _password);
   });
 }
+if (_logout) _logout.addEventListener("click", _login2.logout);
 if (_map) (0, _mapbox.displayMap)(JSON.parse(_map.dataset.locations));
 },{"core-js/stable":"../../node_modules/core-js/stable/index.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./login":"login.js","./mapbox":"mapbox.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -21857,7 +21897,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60912" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62384" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
