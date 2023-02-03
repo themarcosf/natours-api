@@ -1,13 +1,7 @@
-document.querySelector(".form").addEventListener("submit", (e) => {
-  e.preventDefault();
+import axios from "axios";
+import { displayAlert } from "./alerts";
 
-  const _email = document.getElementById("email").value;
-  const _password = document.getElementById("password").value;
-
-  login(_email, _password);
-});
-
-const login = async function (email, password) {
+export const login = async function (email, password) {
   try {
     const _res = await axios({
       method: "POST",
@@ -15,7 +9,14 @@ const login = async function (email, password) {
       data: { email, password },
       withCredentials: true,
     });
+
+    if (_res.data.status === "success") {
+      displayAlert("success", "Log in successful!");
+      window.setTimeout(() => {
+        location.assign("/");
+      }, 1500);
+    }
   } catch (err) {
-    console.log(err.response.data);
+    displayAlert("error", err.response.data.message);
   }
 };

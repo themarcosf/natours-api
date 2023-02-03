@@ -10,7 +10,14 @@ const { terminate } = require("./utils/lib");
 process.on("uncaughtException", (err) => terminate(err));
 //////////////////////////////////////////////////////////////////
 
-/** database config */
+/** database config
+ * 
+ * strict option (enabled by default) : 
+ *   ensures that values not specified in schema do not get saved to db
+ *   strictQuery=false : 
+ *     avoid strict mode for query filters because empty query filters cause Mongoose
+ *     to return all documents in the model, which can cause data leaks
+ */
 
 // remote database
 const DB = process.env.DATABASE_REMOTE.replace(
@@ -22,6 +29,7 @@ const DB = process.env.DATABASE_REMOTE.replace(
 // const DB = process.env.DATABASE_LOCAL;
 
 mongoose
+  .set("strictQuery", false)
   .connect(DB)
   .then((conn) => console.log(`DB connected to: ${conn.connections[0].name}`));
 //////////////////////////////////////////////////////////////////

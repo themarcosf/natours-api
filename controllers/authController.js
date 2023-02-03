@@ -29,24 +29,49 @@ exports.signup = asyncHandler(async function (req, res, next) {
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * login middleware :
- * validation is done in the function
- * and a JWT token is returned to the client
- */
+/** login middleware : validation is done in the function and JWT token returned to client */
 exports.login = asyncHandler(async function (req, res, next) {
   const { email, password } = req.body;
 
-  // validate email and password from request
+  /** validate email and password from request */
   if (!email || !password)
-    return next(new CustomError("Email or password not provided", 400));
+    return next(new CustomError("Email or password not provided", 401));
 
-  // validate user credentials
+  /** validate user credentials */
   const _user = await User.findOne({ email }).select("+password");
   if (!_user || !(await _user.validatePassword(password, _user.password)))
-    return next(new CustomError("Incorrect email or password", 400));
+    return next(new CustomError("Incorrect email or password", 401));
 
   setupResponse(_user, 200, res);
+});
+
+/** enable rendering conditional frontend assets */
+exports.checkLogin = asyncHandler(async function (req, res, next) {
+  /** check request for token cookie */
+  if (!req.cookies.jwt) return next();
+
+  /** validate token integrity */
+  const _payload = await promisify(jwt.verify)(
+    req.cookies.jwt,
+    process.env.JWT_SECRET
+  );
+
+  /** verify user status */
+  const _user = await User.findById(_payload.id)
+    .select("+photo")
+    .select("+status")
+    .select("+passwordTimestamp");
+  if (!_user || _user.status === "inactive") return next();
+
+  /** check if current password matches token */
+  if (await _user.validateTokenTimestamp(_payload.iat)) return next();
+
+  /**
+   * res.locals : set variables accessible in templates rendered with res.render
+   * variables are available within a single req-res cycle, and will not be shared between requests
+   */
+  res.locals.user = _user;
+  next();
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +84,7 @@ exports.login = asyncHandler(async function (req, res, next) {
 exports.authenticate = asyncHandler(async function (req, res, next) {
   const _error = new CustomError("Authentication failed", 401);
 
-  // check request for authorization token
+  /** check request for authorization token */
   if (!req.cookies.jwt && !req.headers.authorization.startsWith("Bearer"))
     return next(_error);
 
@@ -67,10 +92,10 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
     ? req.cookies.jwt
     : req.headers.authorization.split(" ")[1];
 
-  // validate token integrity
+  /** validate token integrity */
   const _payload = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  // verify user status
+  /** verify user status */
   const _user = await User.findById(_payload.id)
     .select("+status")
     .select("+passwordTimestamp")
@@ -78,7 +103,7 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
 
   if (!_user || _user.status === "inactive") return next(_error);
 
-  // check if current password matches token
+  /** check if current password matches token */
   if (await _user.validateTokenTimestamp(_payload.iat)) return next(_error);
 
   // attach user data to request
@@ -104,15 +129,15 @@ exports.authorization = (...roles) => {
 
 /** Password management middleware */
 exports.forgotPassword = asyncHandler(async function (req, res, next) {
-  // get user based on email
+  /** get user based on email */
   const _user = await User.findOne({ email: req.body.email });
   if (!_user) return next(new Error("Email not found", 404));
 
-  // generate random reset token and save
+  /** generate random reset token and save */
   const _resetToken = _user.generatorPasswordResetToken();
   await _user.save({ validateBeforeSave: false });
 
-  // send email to user with token
+  /** send email to user with token */
   try {
     const _resetUrl = `http://${process.env.HOST}:${process.env.PORT}/api/v1/users/resetPassword/${_resetToken}`;
     await emailHandler({
@@ -137,7 +162,7 @@ exports.forgotPassword = asyncHandler(async function (req, res, next) {
 });
 
 exports.resetPassword = asyncHandler(async function (req, res, next) {
-  // get user based on token and check if token is expired
+  /** get user based on token and check if token is expired */
   const _hashedToken = crypto
     .createHash("sha256")
     .update(req.params.token)
@@ -150,7 +175,7 @@ exports.resetPassword = asyncHandler(async function (req, res, next) {
 
   if (!_user) return next(new CustomError("Invalid token", 400));
 
-  // updated password
+  /** updated password */
   _user.password = req.body.password;
   _user.passwordConfirm = req.body.passwordConfirm;
   _user.passwordResetToken = undefined;
@@ -162,17 +187,17 @@ exports.resetPassword = asyncHandler(async function (req, res, next) {
 
 /** security best practice: require and verify current password before update */
 exports.updatePassword = asyncHandler(async function (req, res, next) {
-  // get user from collection
+  /** get user from collection */
   const _user = await User.findById(req.user._id).select("+password");
 
-  // verify posted current password
+  /** verify posted current password */
   if (
     !(await _user.validatePassword(req.body.passwordCurrent, _user.password))
   ) {
     return next(new CustomError("Incorrect password", 401));
   }
 
-  // update password
+  /** update password */
   _user.password = req.body.password;
   _user.passwordConfirm = req.body.passwordConfirm;
   await _user.save();
