@@ -84,6 +84,7 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
     ratingsAverage: _avg,
   });
 };
+//////////////////////////////////////////////////////////////////////////////////////
 
 /** @dev this.constructor : enable using Review model before declaring it */
 reviewSchema.post("save", function () {

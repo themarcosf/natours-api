@@ -6,17 +6,24 @@
  * email systems administrator about critical errors
  */
 
-const devError = (err, res) =>
-  res
-    .status(err.statusCode)
-    .json({
+const devError = (err, req, res) => {
+  if (req.originalUrl.startsWith("/api")) {
+    return res.status(err.statusCode).json({
       status: err.status,
-      stack: err.stack,
       message: err.message,
-    })
-    .end();
+      stack: err.stack,
+    });
+  }
 
-const prodError = (err, res) => {
+  if (!req.originalUrl.startsWith("/api")) {
+    return res.status(err.statusCode).render("error", {
+      title: "Something went wrong!",
+      msg: err.message,
+    });
+  }
+};
+
+const prodError = (err, req, res) => {
   /** operational errors from mongoDB and mongoose */
   if (
     err.name === "CastError" ||
@@ -27,19 +34,33 @@ const prodError = (err, res) => {
   )
     err.isOperational = true;
 
-  err.isOperational
-    ? res
-        .status(err.statusCode)
-        .json({
-          status: err.status,
-          message: err.message,
-          operational: err.isOperational,
+  if (req.originalUrl.startsWith("/api")) {
+    err.isOperational
+      ? res
+          .status(err.statusCode)
+          .json({
+            status: err.status,
+            message: err.message,
+            operational: err.isOperational,
+          })
+          .end()
+      : unknownError(err, req, res);
+  }
+
+  if (!req.originalUrl.startsWith("/api")) {
+    err.isOperational
+      ? res.status(err.statusCode).render("error", {
+          title: "Something went wrong!",
+          msg: err.message,
         })
-        .end()
-    : unknownError(err, res);
+      : res.status(err.statusCode).render("error", {
+          title: "Something went wrong!",
+          msg: "Please try again later.",
+        });
+  }
 };
 
-const unknownError = (err, res) => {
+const unknownError = (err, req, res) => {
   console.error(`💥 ERROR: ${err}`);
   return res
     .status(500)
@@ -55,6 +76,6 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || "error";
 
   process.env.NODE_ENV === "development"
-    ? devError(err, res)
-    : prodError(err, res);
+    ? devError(err, req, res)
+    : prodError(err, req, res);
 };
