@@ -6,6 +6,8 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router();
 
+router.get("/me", authController.authenticate, viewsController.userAccount);
+
 /** login check required for all pages rendered after this middleware */
 router.use(authController.checkLogin);
 

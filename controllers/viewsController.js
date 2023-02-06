@@ -6,6 +6,10 @@ exports.login = function (req, res) {
   res.status(200).render("login", { title: "Log in" });
 };
 
+exports.userAccount = function (req, res) {
+  res.status(200).render("account", { title: "Your account" });
+};
+
 exports.overview = asyncHandler(async function (req, res, next) {
   const tours = await Tour.find();
 

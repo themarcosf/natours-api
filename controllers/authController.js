@@ -99,8 +99,12 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
   const _error = new CustomError("Authentication failed", 401);
 
   /** check request for authorization token */
-  if (!req.cookies.jwt && !req.headers.authorization.startsWith("Bearer"))
+  try {
+    if (!req.cookies.jwt && !req.headers.authorization.startsWith("Bearer"))
+      return next(_error);
+  } catch (err) {
     return next(_error);
+  }
 
   const token = req.cookies.jwt
     ? req.cookies.jwt
@@ -112,6 +116,7 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
   /** verify user status */
   const _user = await User.findById(_payload.id)
     .select("+status")
+    .select("+photo")
     .select("+passwordTimestamp")
     .select("+role");
 
@@ -122,6 +127,7 @@ exports.authenticate = asyncHandler(async function (req, res, next) {
 
   // attach user data to request
   req.user = _user;
+  res.locals.user = _user;
   next();
 });
 
