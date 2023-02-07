@@ -39,6 +39,9 @@ app.use(express.json({ limit: "10kb" }));
 /** parse request cookies */
 app.use(cookieParser());
 
+/** parse data coming from an HTML form */
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
 /** set security HTTPS headers [disabled due to incompatibility with PUG] */
 // app.use(helmet());
 

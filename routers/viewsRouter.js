@@ -6,9 +6,10 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router();
 
+/** authenticate: check for jwt in cookie AND header */
 router.get("/me", authController.authenticate, viewsController.userAccount);
 
-/** login check required for all pages rendered after this middleware */
+/** login : check for jwt in cookie only */
 router.use(authController.checkLogin);
 
 /** routes middleware */

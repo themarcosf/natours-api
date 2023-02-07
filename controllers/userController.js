@@ -30,7 +30,7 @@ exports.updateCurrentUser = asyncHandler(async function (req, res, next) {
       new: true,
       runValidators: true,
     }
-  );
+  ).select("+photo");
 
   res
     .status(200)
