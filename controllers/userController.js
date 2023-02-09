@@ -92,22 +92,27 @@ const multerUpload = multer({
   fileFilter: multerFilter,
 });
 
+/**
+ * upload single image to single field : multerUpload.single() -> req.file
+ * upload multiple images to single field : multerUpload.array() -> req.files
+ * upload multiple images to multiple fields : multerUpload.fields() -> req.files
+ */
 exports.uploadSingleImage = multerUpload.single("photo");
 
-exports.resizeSingleImage = function (req, res, next) {
+exports.resizeSingleImage = asyncHandler(async function (req, res, next) {
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
   /** image processing to thumbnail */
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${req.file.filename}`);
 
   next();
-};
+});
 ////////////////////////////////////////////////////////////////////////
 
 /** CRUD handlers */

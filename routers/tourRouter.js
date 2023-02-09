@@ -9,7 +9,7 @@ const router = express.Router();
 /** mount-nested-routes middleware */
 router.use("/:tourId/reviews", reviewRouter);
 
-/** aliasing a frequently requested route */ 
+/** aliasing a frequently requested route */
 router.get("/top5", tourController.aliasTop5, tourController.getAllTours);
 
 /** aggregation pipelines */
@@ -29,7 +29,7 @@ router.get(
 
 router.get("/distances/:latlng/unit/:unit", tourController.distances);
 
-/** routes middleware */ 
+/** routes middleware */
 router
   .route("/")
   .get(tourController.getAllTours)
@@ -45,6 +45,8 @@ router
   .patch(
     authController.authenticate,
     authController.authorization("admin", "lead-guide"),
+    tourController.uploadMultipleImages,
+    tourController.resizeMultipleImages,
     tourController.updateTour
   )
   .delete(
