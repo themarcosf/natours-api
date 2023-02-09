@@ -2,7 +2,9 @@ const express = require("express");
 
 const authController = require("./../controllers/authController");
 const userController = require("./../controllers/userController");
+////////////////////////////////////////////////////////////////////////
 
+/** config express router */
 const router = express.Router();
 
 /** routes middleware */
@@ -19,7 +21,11 @@ router.patch("/updatePassword", authController.updatePassword);
 
 router
   .route("/currentUser")
-  .patch(userController.updateCurrentUser)
+  .patch(
+    userController.uploadSingleImage,
+    userController.resizeSingleImage,
+    userController.updateCurrentUser
+  )
   .delete(userController.deleteCurrentUser);
 
 router.get("/me", userController.readCurrentUser, userController.getUser);

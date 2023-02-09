@@ -21925,38 +21925,34 @@ if (_map) (0, _mapbox.displayMap)(JSON.parse(_map.dataset.locations));
 if (_accountSettings) {
   _accountSettings.addEventListener("submit", function (e) {
     e.preventDefault();
-    var _name = document.getElementById("name").value;
-    var _email = document.getElementById("email").value;
-    (0, _updateUser.updateSettings)({
-      name: _name,
-      email: _email
-    });
+    var _form = new FormData();
+    _form.append("name", document.getElementById("name").value);
+    _form.append("email", document.getElementById("email").value);
+    _form.append("photo", document.getElementById("photo").files[0]);
+    (0, _updateUser.updateSettings)(_form);
   });
 }
 if (_passwordSettings) {
   _passwordSettings.addEventListener("submit", /*#__PURE__*/function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(e) {
-      var passwordCurrent, password, passwordConfirm;
+      var _form;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             e.preventDefault();
             document.querySelector(".btn--password").textContent = "Updating...";
-            passwordCurrent = document.getElementById("password-current").value;
-            password = document.getElementById("password").value;
-            passwordConfirm = document.getElementById("password-confirm").value;
-            _context.next = 7;
-            return (0, _updateUser.updateSettings)({
-              passwordCurrent: passwordCurrent,
-              password: password,
-              passwordConfirm: passwordConfirm
-            }, "password");
-          case 7:
+            _form = new FormData();
+            _form.append("passwordCurrent", document.getElementById("password-current").value);
+            _form.append("password", document.getElementById("password").value);
+            _form.append("passwordConfirm", document.getElementById("password-confirm").value);
+            _context.next = 8;
+            return (0, _updateUser.updateSettings)(_form, "password");
+          case 8:
             document.querySelector(".btn--password").textContent = "Save password";
             document.getElementById("password-current").value = "";
             document.getElementById("password").value = "";
             document.getElementById("password-confirm").value = "";
-          case 11:
+          case 12:
           case "end":
             return _context.stop();
         }
@@ -21992,7 +21988,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49858" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52519" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

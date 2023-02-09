@@ -36,24 +36,33 @@ if (_map) displayMap(JSON.parse(_map.dataset.locations));
 if (_accountSettings) {
   _accountSettings.addEventListener("submit", (e) => {
     e.preventDefault();
-    const _name = document.getElementById("name").value;
-    const _email = document.getElementById("email").value;
-    updateSettings({ name: _name, email: _email });
+
+    const _form = new FormData();
+    _form.append("name", document.getElementById("name").value);
+    _form.append("email", document.getElementById("email").value);
+    _form.append("photo", document.getElementById("photo").files[0]);
+
+    updateSettings(_form);
   });
 }
 
 if (_passwordSettings) {
   _passwordSettings.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     document.querySelector(".btn--password").textContent = "Updating...";
 
-    const passwordCurrent = document.getElementById("password-current").value;
-    const password = document.getElementById("password").value;
-    const passwordConfirm = document.getElementById("password-confirm").value;
-    await updateSettings(
-      { passwordCurrent, password, passwordConfirm },
-      "password"
+    const _form = new FormData();
+    _form.append(
+      "passwordCurrent",
+      document.getElementById("password-current").value
     );
+    _form.append("password", document.getElementById("password").value);
+    _form.append(
+      "passwordConfirm",
+      document.getElementById("password-confirm").value
+    );
+    await updateSettings(_form, "password");
 
     document.querySelector(".btn--password").textContent = "Save password";
     document.getElementById("password-current").value = "";

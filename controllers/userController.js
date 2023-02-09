@@ -1,12 +1,17 @@
-const User = require("./../models/userModel");
+const multer = require("multer");
+const sharp = require("sharp");
+
 const {
   readOne,
   readAll,
   updateOne,
   deleteOne,
 } = require("./../utils/factoryHandlers");
+const User = require("./../models/userModel");
 const { CustomError, asyncHandler, filterData } = require("../utils/lib");
 ////////////////////////////////////////////////////////////////////////
+
+/** CURRENT USER middleware */
 
 exports.readCurrentUser = (req, res, next) => {
   req.params.id = req.user.id;
@@ -21,6 +26,7 @@ exports.updateCurrentUser = asyncHandler(async function (req, res, next) {
 
   /** filter user-provided data fields */
   const _filteredData = filterData(req.body, "name", "email");
+  if (req.file) _filteredData.photo = req.file.filename;
 
   /** update user document */
   const _updatedUser = await User.findByIdAndUpdate(
@@ -59,6 +65,52 @@ exports.deleteCurrentUser = asyncHandler(async function (req, res, next) {
 });
 ////////////////////////////////////////////////////////////////////////
 
+/**
+ * EXAMPLE : config multer upload middleware to save image to disk
+ *
+ * const multerStorage = multer.diskStorage({
+ *   destination: (req, file, cb) => {
+ *     cb(null, "public/img/users");
+ *   },
+ *   filename: (req, file, cb) => {
+ *     const ext = file.mimetype.split("/")[1];
+ *     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+ *   },
+ * });
+ */
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new CustomError("Not an image! Please upload only images.", 400), false);
+  }
+};
+
+const multerUpload = multer({
+  storage: multer.memoryStorage(),
+  fileFilter: multerFilter,
+});
+
+exports.uploadSingleImage = multerUpload.single("photo");
+
+exports.resizeSingleImage = function (req, res, next) {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  /** image processing to thumbnail */
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+};
+////////////////////////////////////////////////////////////////////////
+
+/** CRUD handlers */
 exports.getUser = readOne(User);
 exports.getAllUsers = readAll(User);
 exports.updateUser = updateOne(User);

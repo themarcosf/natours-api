@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [validator.isEmail, "email is invalid"],
     },
-    photo: { type: String, select: false },
+    photo: { type: String, default: "default.jpg", select: false },
     status: {
       type: String,
       default: "active",
@@ -70,7 +70,7 @@ const userSchema = new mongoose.Schema(
       },
       select: false,
     },
-    passwordTimestamp: { type: Date, select: false },
+    passwordTimestamp: { type: Date, default: Date.now(), select: false },
     passwordResetToken: { type: String, select: false },
     passwordResetExpires: { type: Date, select: false },
     active: { type: Boolean, default: true, select: false },
