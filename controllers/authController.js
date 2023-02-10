@@ -1,13 +1,10 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
+
 const User = require("./../models/userModel");
-const {
-  CustomError,
-  asyncHandler,
-  emailHandler,
-  setupResponse,
-} = require("./../utils/lib");
+const EmailHandler = require("./../utils/emailHandler");
+const { CustomError, asyncHandler, setupResponse } = require("./../utils/lib");
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -24,6 +21,10 @@ exports.signup = asyncHandler(async function (req, res, next) {
     passwordConfirm: req.body.passwordConfirm,
     role: req.body.role,
   });
+
+  const _url = `${req.protocol}://${req.get("host")}/me`;
+
+  await new EmailHandler(_user, _url).sendWelcome();
 
   setupResponse(_user, 201, res);
 });
@@ -160,11 +161,7 @@ exports.forgotPassword = asyncHandler(async function (req, res, next) {
   /** send email to user with token */
   try {
     const _resetUrl = `http://${process.env.HOST}:${process.env.PORT}/api/v1/users/resetPassword/${_resetToken}`;
-    await emailHandler({
-      email: _user.email,
-      subject: "Reset password",
-      message: `Click the link to reset password: ${_resetUrl}`,
-    });
+    await new EmailHandler(_user, _resetUrl).sendPasswordReset();
 
     res
       .status(200)
