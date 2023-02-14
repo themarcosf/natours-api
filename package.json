@@ -47,6 +47,7 @@
     "regenerator": "^0.14.10",
     "sharp": "^0.31.3",
     "slugify": "^1.6.5",
+    "stripe": "^11.10.0",
     "validator": "^13.7.0"
   }
 }

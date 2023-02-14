@@ -1,8 +1,13 @@
+/** @param {String} type : success or error */
 export const displayAlert = function (type, msg) {
   hideAlert();
 
-  const _html = `<div class="alert alert--${type}">${msg}</div>`;
-  document.querySelector("body").insertAdjacentHTML("afterbegin", _html);
+  document
+    .querySelector("body")
+    .insertAdjacentHTML(
+      "afterbegin",
+      `<div class="alert alert--${type}">${msg}</div>`
+    );
 
   window.setTimeout(hideAlert, 5000);
 };

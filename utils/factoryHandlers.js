@@ -1,5 +1,5 @@
 const { CustomError, asyncHandler } = require("./lib");
-const { QueryHelpers } = require("./queryHelpers");
+const QueryHelpers = require("./queryHelpers");
 
 const createOne = (Model) =>
   asyncHandler(async function (req, res, next) {

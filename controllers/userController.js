@@ -1,18 +1,12 @@
 const multer = require("multer");
 const sharp = require("sharp");
 
-const {
-  readOne,
-  readAll,
-  updateOne,
-  deleteOne,
-} = require("./../utils/factoryHandlers");
+const handler = require("./../utils/factoryHandlers");
 const User = require("./../models/userModel");
 const { CustomError, asyncHandler, filterData } = require("../utils/lib");
 ////////////////////////////////////////////////////////////////////////
 
 /** CURRENT USER middleware */
-
 exports.readCurrentUser = (req, res, next) => {
   req.params.id = req.user.id;
   next();
@@ -116,7 +110,7 @@ exports.resizeSingleImage = asyncHandler(async function (req, res, next) {
 ////////////////////////////////////////////////////////////////////////
 
 /** CRUD handlers */
-exports.getUser = readOne(User);
-exports.getAllUsers = readAll(User);
-exports.updateUser = updateOne(User);
-exports.deleteUser = deleteOne(User);
+exports.getUser = handler.readOne(User);
+exports.getAllUsers = handler.readAll(User);
+exports.updateUser = handler.updateOne(User);
+exports.deleteUser = handler.deleteOne(User);

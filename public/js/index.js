@@ -6,9 +6,11 @@
  */
 import "core-js/stable";
 import "regenerator-runtime/runtime";
-import { login, logout } from "./login";
-import { updateSettings } from "./updateUser";
+
 import { displayMap } from "./mapbox";
+import { login, logout } from "./login";
+import { requestBooking } from "./stripe";
+import { updateSettings } from "./updateUser";
 ///////////////////////////////////////////////////////////////
 
 /** DOM elements */
@@ -17,23 +19,23 @@ const _login = document.querySelector(".form--login");
 const _logout = document.querySelector(".nav__el-logout");
 const _accountSettings = document.querySelector(".form-user-data");
 const _passwordSettings = document.querySelector(".form-user-password");
+const _bookingBtn = document.getElementById("book-tour");
 ///////////////////////////////////////////////////////////////
 
 /** delegations */
-if (_login) {
+if (_login)
   _login.addEventListener("submit", (e) => {
     e.preventDefault();
     const _email = document.getElementById("email").value;
     const _password = document.getElementById("password").value;
     login(_email, _password);
   });
-}
 
 if (_logout) _logout.addEventListener("click", logout);
 
 if (_map) displayMap(JSON.parse(_map.dataset.locations));
 
-if (_accountSettings) {
+if (_accountSettings)
   _accountSettings.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -44,9 +46,8 @@ if (_accountSettings) {
 
     updateSettings(_form);
   });
-}
 
-if (_passwordSettings) {
+if (_passwordSettings)
   _passwordSettings.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -69,4 +70,9 @@ if (_passwordSettings) {
     document.getElementById("password").value = "";
     document.getElementById("password-confirm").value = "";
   });
-}
+
+if (_bookingBtn)
+  _bookingBtn.addEventListener("click", (e) => {
+    e.target.textContent = "Processing...";
+    requestBooking(e.target.dataset.tourId);
+  });

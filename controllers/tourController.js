@@ -1,13 +1,7 @@
 const multer = require("multer");
 const sharp = require("sharp");
 
-const {
-  createOne,
-  readOne,
-  readAll,
-  updateOne,
-  deleteOne,
-} = require("./../utils/factoryHandlers");
+const handler = require("./../utils/factoryHandlers");
 const Tour = require("./../models/tourModel");
 const { CustomError, asyncHandler } = require("../utils/lib");
 ////////////////////////////////////////////////////////////////////////
@@ -235,9 +229,8 @@ exports.resizeMultipleImages = asyncHandler(async function (req, res, next) {
 ////////////////////////////////////////////////////////////////////////
 
 /** CRUD handlers */
-
-exports.createNewTour = createOne(Tour);
-exports.getTour = readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
-exports.getAllTours = readAll(Tour);
-exports.updateTour = updateOne(Tour);
-exports.deleteTour = deleteOne(Tour);
+exports.createNewTour = handler.createOne(Tour);
+exports.getTour = handler.readOne(Tour, { path: "reviews" }); // @dev 'select' property may be used
+exports.getAllTours = handler.readAll(Tour);
+exports.updateTour = handler.updateOne(Tour);
+exports.deleteTour = handler.deleteOne(Tour);

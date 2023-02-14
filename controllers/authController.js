@@ -7,12 +7,9 @@ const EmailHandler = require("./../utils/emailHandler");
 const { CustomError, asyncHandler, setupResponse } = require("./../utils/lib");
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * signup middleware :
- * validation is done directly in the model
- * and a JWT token is returned to the client
- */
+/** signup middleware  */
 exports.signup = asyncHandler(async function (req, res, next) {
+  /** validation is done directly in the model */
   const _user = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -22,15 +19,16 @@ exports.signup = asyncHandler(async function (req, res, next) {
     role: req.body.role,
   });
 
+  /** send welcome email to new customer */
   const _url = `${req.protocol}://${req.get("host")}/me`;
-
   await new EmailHandler(_user, _url).sendWelcome();
 
+  /** JWT token returned to client */
   setupResponse(_user, 201, res);
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** login middleware : validation is done in the function and JWT token returned to client */
+/** login middleware */
 exports.login = asyncHandler(async function (req, res, next) {
   const { email, password } = req.body;
 
@@ -43,6 +41,7 @@ exports.login = asyncHandler(async function (req, res, next) {
   if (!_user || !(await _user.validatePassword(password, _user.password)))
     return next(new CustomError("Incorrect email or password", 401));
 
+  /** JWT token returned to client */
   setupResponse(_user, 200, res);
 });
 

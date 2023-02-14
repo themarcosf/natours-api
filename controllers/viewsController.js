@@ -1,5 +1,4 @@
 const Tour = require("./../models/tourModel");
-const User = require("./../models/userModel");
 const { CustomError, asyncHandler } = require("./../utils/lib");
 ////////////////////////////////////////////////////////////////////////
 

@@ -1,10 +1,4 @@
-const {
-  createOne,
-  readOne,
-  readAll,
-  updateOne,
-  deleteOne,
-} = require("./../utils/factoryHandlers");
+const handler = require("./../utils/factoryHandlers");
 const Review = require("./../models/reviewModel");
 ////////////////////////////////////////////////////////////////////////
 
@@ -16,9 +10,9 @@ exports.setProperties = (req, res, next) => {
 };
 ////////////////////////////////////////////////////////////////////////
 
-exports.createReview = createOne(Review);
-exports.getReview = readOne(Review);
-exports.getAllReviews = readAll(Review);
-exports.updateReview = updateOne(Review);
-exports.deleteReview = deleteOne(Review);
-
+/** CRUD handlers */
+exports.createReview = handler.createOne(Review);
+exports.getReview = handler.readOne(Review);
+exports.getAllReviews = handler.readAll(Review);
+exports.updateReview = handler.updateOne(Review);
+exports.deleteReview = handler.deleteOne(Review);
