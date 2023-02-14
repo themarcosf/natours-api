@@ -9,6 +9,11 @@ const router = express.Router();
 
 /** authenticate: check for jwt in cookie AND header */
 router.get("/me", authController.authenticate, viewsController.userAccount);
+router.get(
+  "/my-tours",
+  authController.authenticate,
+  viewsController.scheduledTours
+);
 
 /** login : check for jwt in cookie only */
 router.use(authController.checkLogin);

@@ -64,6 +64,6 @@ exports.createBookingStripe = asyncHandler(async function (req, res, next) {
   if (!tour || !user || !price) return next();
   await Booking.create({ tour, user, price });
 
-  /** security feature : redirect to root removing query strings */
-  res.redirect(req.originalUrl.split("?")[0]);
+  /** security feature : redirect to Bookings page */
+  res.redirect(`${req.protocol}://${req.get("host")}/my-tours`);
 });

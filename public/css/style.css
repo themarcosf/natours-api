@@ -43,6 +43,12 @@ body {
   flex-direction: column;
 }
 
+.h1 {
+  font-size: 1.5rem;
+  color: red;
+  font-weight: bold;
+}
+
 .main {
   background-color: #f7f7f7;
   padding: 8rem 6rem;

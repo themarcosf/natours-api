@@ -84,14 +84,20 @@ const userSchema = new mongoose.Schema(
 //////////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Query middleware
+ * Middlewares:
+ * types: document, query, aggregation, model
+ * pre-hooks: triggered before the event command
+ * post-hooks: triggered after the event command
+ *
+ * CAVEAT: document middlewares are used for .save() or .create()
+ *         they do NOT work for .update() functions
+ *
  * regex /^param/ : any expression starting with param
  */
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
   next();
 });
-//////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Encryption middleware using document pre-hooks

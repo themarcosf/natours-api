@@ -1,4 +1,6 @@
 const Tour = require("./../models/tourModel");
+const User = require("./../models/userModel");
+const Booking = require("./../models/bookingModel");
 const { CustomError, asyncHandler } = require("./../utils/lib");
 ////////////////////////////////////////////////////////////////////////
 
@@ -25,4 +27,15 @@ exports.tour = asyncHandler(async function (req, res, next) {
   if (!tour) return next(new CustomError("No tour found with that name", 404));
 
   res.status(200).render("tour", { title: `${tour.name} Tour`, tour });
+});
+
+exports.scheduledTours = asyncHandler(async function (req, res, next) {
+  const _bookings = await Booking.find({ user: req.user.id });
+  const _tourIds = _bookings.map((el) => el.tour);
+  const _tours = await Tour.find({ _id: { $in: _tourIds } });
+
+  res.status(200).render("overview", {
+    title: "My tours",
+    tours: _tours,
+  });
 });

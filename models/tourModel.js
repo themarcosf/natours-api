@@ -172,6 +172,7 @@ tourSchema.virtual("durationWeeks").get(function () {
   return Math.ceil(this.duration / 7);
 });
 
+/** virtual populate */
 tourSchema.virtual("reviews", {
   ref: "Review",
   foreignField: "tour",

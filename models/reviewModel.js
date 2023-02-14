@@ -87,6 +87,16 @@ reviewSchema.statics.calcAverageRatings = async function (tourId) {
 };
 //////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Middlewares:
+ * types: document, query, aggregation, model
+ * pre-hooks: triggered before the event command
+ * post-hooks: triggered after the event command
+ *
+ * CAVEAT: document middlewares are used for .save() or .create()
+ *         they do NOT work for .update() functions
+ */
+
 /** @dev this.constructor : enable using Review model before declaring it */
 reviewSchema.post("save", function () {
   this.constructor.calcAverageRatings(this.tour);
@@ -99,12 +109,11 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
   next();
 });
 
+/** Query pre-hook middleware : regex /^param/ applies to any expression starting with param */
 reviewSchema.post(/^findOneAnd/, async function () {
   await this._review.constructor.calcAverageRatings(this._review.tour);
 });
-//////////////////////////////////////////////////////////////////////////////////////
 
-/** Query pre-hook middleware : regex /^param/ applies to any expression starting with param */
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
