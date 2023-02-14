@@ -11,9 +11,7 @@ const { asyncHandler } = require("./../../utils/lib");
 export const requestBooking = asyncHandler(async function (tourId) {
   try {
     /** get stripe session from server API */
-    const _session = await axios(
-      `http://127.0.0.1:8000/api/v1/bookings/checkout-session/${tourId}`
-    );
+    const _session = await axios(`/api/v1/bookings/checkout-session/${tourId}`);
     await stripe.redirectToCheckout({ sessionId: _session.data.session.id });
 
     /** process customer payment */

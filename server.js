@@ -11,10 +11,10 @@ process.on("uncaughtException", (err) => terminate(err));
 //////////////////////////////////////////////////////////////////
 
 /** database config
- * 
- * strict option (enabled by default) : 
+ *
+ * strict option (enabled by default) :
  *   ensures that values not specified in schema do not get saved to db
- *   strictQuery=false : 
+ *   strictQuery=false :
  *     avoid strict mode for query filters because empty query filters cause Mongoose
  *     to return all documents in the model, which can cause data leaks
  */
@@ -36,7 +36,7 @@ mongoose
 
 /** server config */
 
-const server = app.listen(process.env.PORT || 8000, () =>
+const server = app.listen(process.env.PORT, () =>
   console.log(`Server running on port ${process.env.PORT}`)
 );
 //////////////////////////////////////////////////////////////////

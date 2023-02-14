@@ -3,6 +3,7 @@ const path = require("path");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const express = require("express");
+const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
@@ -64,6 +65,9 @@ app.use(
 
 // TODO : data sanitization against XSS eg xss or xss-clean
 // TODO : prevent http parameter pollution eg hpp
+
+// compress response body
+app.use(compression());
 
 /** routers middleware */
 app.use("/", viewsRouter);

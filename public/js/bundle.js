@@ -21768,7 +21768,7 @@ var login = /*#__PURE__*/function () {
           _context.next = 3;
           return (0, _axios.default)({
             method: "POST",
-            url: "http://127.0.0.1:8000/api/v1/users/login",
+            url: "/api/v1/users/login",
             data: {
               email: email,
               password: password
@@ -21810,7 +21810,7 @@ var logout = /*#__PURE__*/function () {
           _context2.next = 3;
           return (0, _axios.default)({
             method: "GET",
-            url: "http://127.0.0.1:8000/api/v1/users/logout"
+            url: "/api/v1/users/logout"
           });
         case 3:
           _res = _context2.sent;
@@ -73436,7 +73436,7 @@ var requestBooking = asyncHandler( /*#__PURE__*/function () {
         case 0:
           _context.prev = 0;
           _context.next = 3;
-          return (0, _axios.default)("http://127.0.0.1:8000/api/v1/bookings/checkout-session/".concat(tourId));
+          return (0, _axios.default)("/api/v1/bookings/checkout-session/".concat(tourId));
         case 3:
           _session = _context.sent;
           _context.next = 6;
@@ -73487,7 +73487,7 @@ var updateSettings = /*#__PURE__*/function () {
           _context.next = 4;
           return (0, _axios.default)({
             method: "PATCH",
-            url: "http://127.0.0.1:8000/api/v1/users/".concat(_url),
+            url: "/api/v1/users/".concat(_url),
             data: data,
             withCredentials: true
           });
@@ -73612,7 +73612,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58302" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59242" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
