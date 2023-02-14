@@ -13,6 +13,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const mongoose = require("mongoose");
 const validator = require("validator");
+//////////////////////////////////////////////////////////////////////////////////////
 
 /** mongoose format: BSON */
 const userSchema = new mongoose.Schema(
@@ -159,7 +160,6 @@ userSchema.methods.generatorPasswordResetToken = function () {
   /** return plaintext token */
   return _resetToken;
 };
-
 //////////////////////////////////////////////////////////////////////////////////////
 
 const User = new mongoose.model("User", userSchema);

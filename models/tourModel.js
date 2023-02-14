@@ -9,6 +9,7 @@
  */
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+//////////////////////////////////////////////////////////////////////////////////////
 
 /** mongoose format: BSON */
 const tourSchema = new mongoose.Schema(
@@ -229,6 +230,7 @@ tourSchema.pre(/^find/, function (next) {
  *   next();
  * });
  */
+//////////////////////////////////////////////////////////////////////////////////////
 
 const Tour = new mongoose.model("Tour", tourSchema);
 
